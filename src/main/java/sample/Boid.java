@@ -1,6 +1,6 @@
 package sample;
 
-public class Boid {
+public abstract class Boid {
 
     private int[] position;
     private int velocity;
