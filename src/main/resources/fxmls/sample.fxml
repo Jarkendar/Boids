@@ -1,23 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
 
-<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
-   <children>
-      <AnchorPane prefHeight="800.0" prefWidth="800.0">
-         <children>
-            <Canvas height="772.0" layoutX="14.0" layoutY="14.0" width="572.0" />
-         </children>
-      </AnchorPane>
-   </children>
-   <columnConstraints>
-      <ColumnConstraints />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints />
-   </rowConstraints>
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.121"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+    <children>
+        <AnchorPane prefHeight="800.0" prefWidth="800.0">
+            <children>
+                <Canvas height="772.0" layoutX="14.0" layoutY="14.0" width="522.0"/>
+                <Label layoutX="600.0" layoutY="14.0" text="Boids">
+                    <font>
+                        <Font size="40.0"/>
+                    </font>
+                </Label>
+                <TextField/>
+                <Label layoutX="550.0" layoutY="90.0" text="Allies count"/>
+                <TextField fx:id="allyCountField" layoutX="710.0" layoutY="85.0" maxWidth="76.0"/>
+                <Label layoutX="550.0" layoutY="118.0" text="Predators count"/>
+                <TextField fx:id="predatorCountField" layoutX="710.0" layoutY="113.0" maxWidth="76.0"/>
+                <Label layoutX="550.0" layoutY="146.0" text="Neighborhood radius"/>
+                <TextField fx:id="nieghborhoodRadiusField" layoutX="710.0" layoutY="141.0" maxWidth="76.0"/>
+                <Label layoutX="550.0" layoutY="174.0" text="Viewing angle"/>
+                <TextField fx:id="viewingAngleField" layoutX="710.0" layoutY="169.0" maxWidth="76.0"/>
+                <Label layoutX="550.0" layoutY="202.0" text="Minimal distance"/>
+                <TextField fx:id="minimalDistanceField" layoutX="710.0" layoutY="197.0" maxWidth="76.0"/>
+                <Label layoutX="550.0" layoutY="230.0" text="Weight of speed"/>
+                <TextField fx:id="weighOfSpeedField" layoutX="710.0" layoutY="225.0" maxWidth="76.0"/>
+                <Label layoutX="550.0" layoutY="258.0" text="Weight of distance"/>
+                <TextField fx:id="weighOfDistanceField" layoutX="710.0" layoutY="253.0" maxWidth="76.0"/>
+                <Label layoutX="550.0" layoutY="286.0" text="Weight of min distance"/>
+                <TextField fx:id="weightOfMinDistanceField" layoutX="710.0" layoutY="281.0" maxWidth="76.0"/>
+                <Label layoutX="550.0" layoutY="314.0" text="Weight of disturbances"/>
+                <TextField fx:id="weightOfDisturbancesField" layoutX="710.0" layoutY="309.0" maxWidth="76.0"/>
+                <Label layoutX="550.0" layoutY="342.0" text="Max velocity [pix/step]"/>
+                <TextField fx:id="maxVelocityField" layoutX="710.0" layoutY="337.0" maxWidth="76.0"/>
+                <Button layoutX="550.0" layoutY="728.0" minWidth="236.0" maxWidth="236.0" minHeight="58.0"
+                        maxHeight="58.0" mnemonicParsing="false"
+                        text="Update"/>
+            </children>
+        </AnchorPane>
+    </children>
+    <columnConstraints>
+        <ColumnConstraints/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints/>
+    </rowConstraints>
 </GridPane>
