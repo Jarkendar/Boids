@@ -4,7 +4,10 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
-public class Controller {
+import java.util.Observable;
+import java.util.Observer;
+
+public class Controller implements Observer {
 
     public Canvas canvas;
     public TextField allyCountField;
@@ -21,7 +24,7 @@ public class Controller {
 
     public void initialize() {
         allyCountField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (isNumber(newValue)) {
+            if (isIntegerNumber(newValue)) {
                 int number = Integer.parseInt(newValue);
                 if (number > 0 && number < 101) {
                     updateButton.setDisable(!canPressUpdate());
@@ -33,7 +36,7 @@ public class Controller {
             }
         });
         predatorCountField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (isNumber(newValue)) {
+            if (isIntegerNumber(newValue)) {
                 int number = Integer.parseInt(newValue);
                 if (number >= 0 && number < 11) {
                     updateButton.setDisable(!canPressUpdate());
@@ -45,7 +48,7 @@ public class Controller {
             }
         });
         neighborhoodRadiusField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (isNumber(newValue)) {
+            if (isIntegerNumber(newValue)) {
                 int number = Integer.parseInt(newValue);
                 double maxsize = canvas.getWidth() < canvas.getHeight() ? canvas.getWidth() : canvas.getHeight();
                 if (number > 0 && number < (int) maxsize) {
@@ -58,7 +61,7 @@ public class Controller {
             }
         });
         viewingAngleField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (isNumber(newValue)) {
+            if (isIntegerNumber(newValue)) {
                 int number = Integer.parseInt(newValue);
                 if (number > 0 && number < 361) {
                     updateButton.setDisable(!canPressUpdate());
@@ -70,7 +73,7 @@ public class Controller {
             }
         });
         minimalDistanceField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (isNumber(newValue)) {
+            if (isIntegerNumber(newValue)) {
                 int number = Integer.parseInt(newValue);
                 double maxsize = canvas.getWidth() < canvas.getHeight() ? canvas.getWidth() : canvas.getHeight();
                 if (number > 0 && number < (int) maxsize) {
@@ -83,7 +86,7 @@ public class Controller {
             }
         });
         weighOfSpeedField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (isNumber(newValue)) {
+            if (isIntegerNumber(newValue)) {
                 int number = Integer.parseInt(newValue);
                 if (number > 0 && number < 101) {
                     updateButton.setDisable(!canPressUpdate());
@@ -95,7 +98,7 @@ public class Controller {
             }
         });
         weighOfDistanceField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (isNumber(newValue)) {
+            if (isIntegerNumber(newValue)) {
                 int number = Integer.parseInt(newValue);
                 if (number > 0 && number < 101) {
                     updateButton.setDisable(!canPressUpdate());
@@ -107,7 +110,7 @@ public class Controller {
             }
         });
         weightOfDisturbancesField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (isNumber(newValue)) {
+            if (isIntegerNumber(newValue)) {
                 int number = Integer.parseInt(newValue);
                 if (number > 0 && number < 101) {
                     updateButton.setDisable(!canPressUpdate());
@@ -119,7 +122,7 @@ public class Controller {
             }
         });
         weightOfMinDistanceField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (isNumber(newValue)) {
+            if (isIntegerNumber(newValue)) {
                 int number = Integer.parseInt(newValue);
                 if (number > 0 && number < 101) {
                     updateButton.setDisable(!canPressUpdate());
@@ -131,7 +134,7 @@ public class Controller {
             }
         });
         maxVelocityField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (isNumber(newValue)) {
+            if (isIntegerNumber(newValue)) {
                 int number = Integer.parseInt(newValue);
                 if (number > 0 && number < 101) {
                     updateButton.setDisable(!canPressUpdate());
@@ -145,21 +148,25 @@ public class Controller {
     }
 
     private boolean canPressUpdate() {
-        return isNumber(allyCountField.getText())
-                && isNumber(predatorCountField.getText())
-                && isNumber(neighborhoodRadiusField.getText())
-                && isNumber(viewingAngleField.getText())
-                && isNumber(minimalDistanceField.getText())
-                && isNumber(weighOfSpeedField.getText())
-                && isNumber(weighOfDistanceField.getText())
-                && isNumber(weightOfMinDistanceField.getText())
-                && isNumber(weightOfDisturbancesField.getText())
-                && isNumber(maxVelocityField.getText());
+        return isIntegerNumber(allyCountField.getText())
+                && isIntegerNumber(predatorCountField.getText())
+                && isIntegerNumber(neighborhoodRadiusField.getText())
+                && isIntegerNumber(viewingAngleField.getText())
+                && isIntegerNumber(minimalDistanceField.getText())
+                && isIntegerNumber(weighOfSpeedField.getText())
+                && isIntegerNumber(weighOfDistanceField.getText())
+                && isIntegerNumber(weightOfMinDistanceField.getText())
+                && isIntegerNumber(weightOfDisturbancesField.getText())
+                && isIntegerNumber(maxVelocityField.getText());
 
     }
 
-    private boolean isNumber(String text) {
+    private boolean isIntegerNumber(String text) {
         return text.matches("^\\d+$");
     }
 
+    @Override
+    public void update(Observable observable, Object arg) {
+
+    }
 }

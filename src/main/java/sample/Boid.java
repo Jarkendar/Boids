@@ -2,7 +2,7 @@ package sample;
 
 public abstract class Boid {
 
-    private int[] position;
+    private int[] position;// 0->X; 1->Y
     private int velocity;
     private int rotation;
 
