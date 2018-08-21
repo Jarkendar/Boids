@@ -194,13 +194,13 @@ public class Controller implements Observer {
 
     private void drawBoids() {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-        graphicsContext.clearRect(0,0,canvas.getWidth(), canvas.getHeight());
+        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         graphicsContext.setFill(Color.GREEN);
         for (Ally ally : boardManager.getAllies()) {
             drawAlly(graphicsContext, ally);
         }
         graphicsContext.setFill(Color.RED);
-        for (Predator predator : boardManager.getPredators()){
+        for (Predator predator : boardManager.getPredators()) {
             drawPredator(graphicsContext, predator);
         }
     }
@@ -222,19 +222,19 @@ public class Controller implements Observer {
     }
 
     private void drawPredator(GraphicsContext graphicsContext, Predator predator) {
-            int anglePeak;
-            if (predator.getVelocity()[0] == 0) {
-                anglePeak = (predator.getVelocity()[1] > 0) ? 90 : -90;
-            } else {
-                anglePeak = (int) Math.atan(predator.getVelocity()[1] / predator.getVelocity()[0]);
-            }
-            int angleLeft = (anglePeak - 150 < 0) ? anglePeak - 150 + 360 : anglePeak - 150;
-            int angleRight = (anglePeak + 150 >= 360) ? anglePeak + 150 - 360 : anglePeak + 150;
-            double correctPosX = -CENTER[0] + predator.getPosition()[0];
-            double correctPosY = -CENTER[1] + predator.getPosition()[1];
-            double[] posX = new double[]{shieldOfPositions[angleLeft][0] + correctPosX, shieldOfPositions[anglePeak][0] + correctPosX, shieldOfPositions[angleRight][0] + correctPosX};
-            double[] posY = new double[]{shieldOfPositions[angleLeft][1] + correctPosY, shieldOfPositions[anglePeak][1] + correctPosY, shieldOfPositions[angleRight][1] + correctPosY};
-            graphicsContext.fillPolygon(posX, posY, 3);
+        int anglePeak;
+        if (predator.getVelocity()[0] == 0) {
+            anglePeak = (predator.getVelocity()[1] > 0) ? 90 : -90;
+        } else {
+            anglePeak = (int) Math.atan(predator.getVelocity()[1] / predator.getVelocity()[0]);
+        }
+        int angleLeft = (anglePeak - 150 < 0) ? anglePeak - 150 + 360 : anglePeak - 150;
+        int angleRight = (anglePeak + 150 >= 360) ? anglePeak + 150 - 360 : anglePeak + 150;
+        double correctPosX = -CENTER[0] + predator.getPosition()[0];
+        double correctPosY = -CENTER[1] + predator.getPosition()[1];
+        double[] posX = new double[]{shieldOfPositions[angleLeft][0] + correctPosX, shieldOfPositions[anglePeak][0] + correctPosX, shieldOfPositions[angleRight][0] + correctPosX};
+        double[] posY = new double[]{shieldOfPositions[angleLeft][1] + correctPosY, shieldOfPositions[anglePeak][1] + correctPosY, shieldOfPositions[angleRight][1] + correctPosY};
+        graphicsContext.fillPolygon(posX, posY, 3);
     }
 
     @Override

@@ -17,7 +17,7 @@ public class BoardManager extends Observable implements Runnable {
     private double viewingAngle = 0;
     private double minimalDistance = 0;
     private double maxVelocity = 0;
-    private double[] startVelocity = {0,0};
+    private double[] startVelocity = {0, 0};
 
     private double weightOfSpeed = 100;
     private double weightOfDistance = 100;
@@ -70,8 +70,8 @@ public class BoardManager extends Observable implements Runnable {
         Random random = new Random(seed);
         double[] position = new double[2];
         do {
-            position[0] = random.nextDouble()*boardWeight;
-            position[1] = random.nextDouble()*boardHeight;
+            position[0] = random.nextDouble() * boardWeight;
+            position[1] = random.nextDouble() * boardHeight;
         } while (!isAvailableBoidsPositions(position));
         return position;
     }
