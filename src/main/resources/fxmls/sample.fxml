@@ -52,7 +52,7 @@
                 <TextField fx:id="maxVelocityField" layoutX="710.0" layoutY="337.0" maxWidth="76.0" promptText="px/step"
                            text="4"/>
                 <Button fx:id="updateButton" layoutX="550.0" layoutY="728.0" maxHeight="58.0" maxWidth="236.0"
-                        minHeight="58.0" minWidth="236.0" mnemonicParsing="false" text="Update"/>
+                        minHeight="58.0" minWidth="236.0" mnemonicParsing="false" text="Update" onAction="#startSimulation"/>
             </children>
         </AnchorPane>
     </children>
