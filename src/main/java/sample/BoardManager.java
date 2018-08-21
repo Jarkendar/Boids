@@ -17,7 +17,7 @@ public class BoardManager extends Observable implements Runnable {
     private int viewingAngle = 0;
     private int minimalDistance = 0;
     private int maxVelocity = 0;
-    private int startVelocity = 0;
+    private int[] startVelocity = {0,0};
 
     private int weightOfSpeed = 100;
     private int weightOfDistance = 100;
@@ -31,7 +31,8 @@ public class BoardManager extends Observable implements Runnable {
         this.viewingAngle = viewingAngle;
         this.minimalDistance = minimalDistance;
         this.maxVelocity = maxVelocity;
-        startVelocity = maxVelocity / 2;
+        startVelocity[0] = maxVelocity / 2;
+        startVelocity[1] = maxVelocity / 2;
         createPredators(predatorNumber);
         createAllies(allyNumber);
     }
@@ -43,7 +44,8 @@ public class BoardManager extends Observable implements Runnable {
         this.viewingAngle = viewingAngle;
         this.minimalDistance = minimalDistance;
         this.maxVelocity = maxVelocity;
-        startVelocity = maxVelocity / 2;
+        startVelocity[0] = maxVelocity / 2;
+        startVelocity[1] = maxVelocity / 2;
         this.weightOfSpeed = weightOfSpeed;
         this.weightOfDistance = weightOfDistance;
         this.weightOfDisturbances = weightOfDisturbances;
@@ -55,14 +57,14 @@ public class BoardManager extends Observable implements Runnable {
     private void createPredators(int count) {
         predators = new LinkedList<>();
         for (int i = 0; i < count; ++i) {
-            predators.addLast(new Predator(randPosition(System.currentTimeMillis()), startVelocity, 0));
+            predators.addLast(new Predator(randPosition(System.currentTimeMillis()), startVelocity));
         }
     }
 
     private void createAllies(int count) {
         allies = new LinkedList<>();
         for (int i = 0; i < count; ++i) {
-            allies.addLast(new Ally(randPosition(System.currentTimeMillis()), startVelocity, 0));
+            allies.addLast(new Ally(randPosition(System.currentTimeMillis()), startVelocity));
         }
     }
 
