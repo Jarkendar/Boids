@@ -1,7 +1,7 @@
 package sample;
 
 public class Ally extends Boid {
-    public Ally(int[] position, int velocity[]) {
+    public Ally(double[] position, double[] velocity) {
         super(position, velocity);
     }
 }

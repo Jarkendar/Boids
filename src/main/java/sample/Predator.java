@@ -1,7 +1,7 @@
 package sample;
 
 public class Predator extends Boid {
-    public Predator(int[] position, int[] velocity) {
+    public Predator(double[] position, double[] velocity) {
         super(position, velocity);
     }
 }
