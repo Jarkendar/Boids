@@ -92,59 +92,50 @@ public class BoardManager extends Observable implements Runnable {
 
     @Override
     public void run() {
-        while(true){
-            for (int i = 0; i < allies.size(); ++i){
-                LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(allies.get(i));
-                display(allies.get(i), neighbourhood);
+        while (true) {
+            for (Ally ally : allies) {
+                LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
             }
             break;
         }
     }
 
-    private void display(Ally ally, LinkedList<Ally> list){
-        System.out.println(ally);
-        for (Ally a : list){
-            System.out.print("\t"+a+";");
-        }
-        System.out.println();
-    }
-
-    private LinkedList<Ally> getNeighbourhoodOfBoid(Ally boid){
+    private LinkedList<Ally> getNeighbourhoodOfBoid(Ally boid) {
         LinkedList<Ally> neighbourList = new LinkedList<>();
-        for (int j = 0; j < allies.size(); ++j){
-            if (boid == allies.get(j)){
+        for (Ally ally : allies) {
+            if (boid == ally) {
                 continue;
             }
-            if (isAllyNeighbourhoodDistance(boid, allies.get(j)) && isAllyVisible(boid, allies.get(j))){
-                neighbourList.addLast(allies.get(j));
+            if (isAllyNeighbourhoodDistance(boid, ally) && isAllyVisible(boid, ally)) {
+                neighbourList.addLast(ally);
             }
         }
         return neighbourList;
     }
 
-    private boolean isAllyNeighbourhoodDistance(Ally source, Ally boid){
-        return Math.sqrt(Math.pow(source.getPosition()[0]-boid.getPosition()[0], 2)+Math.pow(source.getPosition()[1]-boid.getPosition()[1], 2)) < neighborhoodRadius;
+    private boolean isAllyNeighbourhoodDistance(Ally source, Ally boid) {
+        return Math.sqrt(Math.pow(source.getPosition()[0] - boid.getPosition()[0], 2) + Math.pow(source.getPosition()[1] - boid.getPosition()[1], 2)) < neighborhoodRadius;
     }
 
-    private boolean isAllyVisible(Ally source, Ally boid){
-        double boidAngle = calcAngle(boid.getVelocity()[1],boid.getVelocity()[0]);
-        double sourceToBoid = calcAngle(source.getPosition()[1]-boid.getPosition()[1],source.getPosition()[0]-boid.getPosition()[0]);
-        return Math.abs(boidAngle-sourceToBoid) < viewingAngle/2;
+    private boolean isAllyVisible(Ally source, Ally boid) {
+        double boidAngle = calcAngle(boid.getVelocity()[1], boid.getVelocity()[0]);
+        double sourceToBoid = calcAngle(source.getPosition()[1] - boid.getPosition()[1], source.getPosition()[0] - boid.getPosition()[0]);
+        return Math.abs(boidAngle - sourceToBoid) < viewingAngle / 2;
     }
 
-    private double calcAngle(double numerator, double denumerator){
+    private double calcAngle(double numerator, double denumerator) {
         double angle;
         if (denumerator == 0) {
             angle = (numerator > 0) ? 90 : 270;
-        }else if(numerator == 0) {
+        } else if (numerator == 0) {
             angle = denumerator > 0 ? 0 : 180;
-        }else {
-            angle = (int) Math.toDegrees(Math.atan(numerator/denumerator));
-            if (denumerator < 0){
-                if (angle < 0){
-                    angle-= 180;
-                }else {
-                    angle+= 180;
+        } else {
+            angle = (int) Math.toDegrees(Math.atan(numerator / denumerator));
+            if (denumerator < 0) {
+                if (angle < 0) {
+                    angle -= 180;
+                } else {
+                    angle += 180;
                 }
             }
         }

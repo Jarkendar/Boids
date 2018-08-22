@@ -189,13 +189,13 @@ public class Controller implements Observer {
     }
 
 
-    private void refreshCanvas(){
+    private void refreshCanvas() {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         clearCanvas(graphicsContext);
         drawBoids(graphicsContext);
     }
 
-    private void clearCanvas(GraphicsContext graphicsContext){
+    private void clearCanvas(GraphicsContext graphicsContext) {
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
@@ -208,19 +208,19 @@ public class Controller implements Observer {
         }
     }
 
-    private void drawBoid(GraphicsContext graphicsContext, Boid boid){
+    private void drawBoid(GraphicsContext graphicsContext, Boid boid) {
         int anglePeak;
         if (boid.getVelocity()[0] == 0) {
             anglePeak = (boid.getVelocity()[1] > 0) ? 90 : 270;
-        }else if(boid.getVelocity()[1] == 0) {
+        } else if (boid.getVelocity()[1] == 0) {
             anglePeak = boid.getVelocity()[0] > 0 ? 0 : 180;
-        }else {
+        } else {
             anglePeak = (int) Math.toDegrees(Math.atan(boid.getVelocity()[1] / boid.getVelocity()[0]));
-            if (boid.getVelocity()[0] < 0){
-                if (anglePeak < 0){
-                    anglePeak-= 180;
-                }else {
-                    anglePeak+= 180;
+            if (boid.getVelocity()[0] < 0) {
+                if (anglePeak < 0) {
+                    anglePeak -= 180;
+                } else {
+                    anglePeak += 180;
                 }
             }
         }
@@ -231,9 +231,9 @@ public class Controller implements Observer {
         double correctPosY = -CENTER[1] + boid.getPosition()[1];
         double[] posX = new double[]{shieldOfPositions[angleLeft][0] + correctPosX, shieldOfPositions[anglePeak][0] + correctPosX, shieldOfPositions[angleRight][0] + correctPosX};
         double[] posY = new double[]{shieldOfPositions[angleLeft][1] + correctPosY, shieldOfPositions[anglePeak][1] + correctPosY, shieldOfPositions[angleRight][1] + correctPosY};
-        if (boid instanceof Ally){
+        if (boid instanceof Ally) {
             graphicsContext.setFill(Color.GREEN);
-        }else if (boid instanceof Predator){
+        } else if (boid instanceof Predator) {
             graphicsContext.setFill(Color.RED);
         }
         graphicsContext.fillPolygon(posX, posY, 3);

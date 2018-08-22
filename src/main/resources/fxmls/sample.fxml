@@ -26,7 +26,7 @@
                            text="1"/>
                 <Label layoutX="550.0" layoutY="146.0" text="Neighborhood radius"/>
                 <TextField fx:id="neighborhoodRadiusField" layoutX="710.0" layoutY="141.0" maxWidth="76.0"
-                           promptText="px" text="20"/>
+                           promptText="px" text="200"/>
                 <Label layoutX="550.0" layoutY="174.0" text="Viewing angle"/>
                 <TextField fx:id="viewingAngleField" layoutX="710.0" layoutY="169.0" maxWidth="76.0" promptText="°"
                            text="120"/>
