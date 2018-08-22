@@ -1,5 +1,7 @@
 package sample;
 
+import java.util.Arrays;
+
 public abstract class Boid {
 
     private double[] position;// 0->X; 1->Y
@@ -24,5 +26,13 @@ public abstract class Boid {
 
     public void setVelocity(double[] velocity) {
         this.velocity = velocity;
+    }
+
+    @Override
+    public String toString() {
+        return "Boid{" +
+                "position=" + Arrays.toString(position) +
+                ", velocity=" + Arrays.toString(velocity) +
+                '}';
     }
 }

@@ -31,7 +31,7 @@ public class BoardManager extends Observable implements Runnable {
         this.viewingAngle = viewingAngle;
         this.minimalDistance = minimalDistance;
         this.maxVelocity = maxVelocity;
-        startVelocity[0] = maxVelocity / 2.0;
+        startVelocity[0] = 0;//maxVelocity / 2.0;
         startVelocity[1] = maxVelocity / 2.0;
         createPredators(predatorNumber);
         createAllies(allyNumber);
@@ -92,6 +92,60 @@ public class BoardManager extends Observable implements Runnable {
 
     @Override
     public void run() {
+        while(true){
+            for (int i = 0; i < allies.size(); ++i){
+                LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(allies.get(i));
+                display(allies.get(i), neighbourhood);
+            }
+            break;
+        }
+    }
+
+    private void display(Ally ally, LinkedList<Ally> list){
+        System.out.println(ally);
+        for (Ally a : list){
+            System.out.print("\t"+a+";");
+        }
+        System.out.println();
+    }
+
+    private LinkedList<Ally> getNeighbourhoodOfBoid(Ally boid){
+        LinkedList<Ally> neighbourList = new LinkedList<>();
+        for (int j = 0; j < allies.size(); ++j){
+            if (boid == allies.get(j)){
+                continue;
+            }
+            if (isAllyNeighbourhoodDistance(boid, allies.get(j)) && isAllyVisible(boid, allies.get(j))){
+                neighbourList.addLast(allies.get(j));
+            }
+        }
+        return neighbourList;
+    }
+
+    private boolean isAllyNeighbourhoodDistance(Ally source, Ally boid){
+        return Math.sqrt(Math.pow(source.getPosition()[0]-boid.getPosition()[0], 2)+Math.pow(source.getPosition()[1]-boid.getPosition()[1], 2)) < neighborhoodRadius;
+    }
+
+    private boolean isAllyVisible(Ally source, Ally boid){
+        double boidAngle;
+        if (boid.getVelocity()[0] == 0){
+            boidAngle = boid.getVelocity()[1] > 0 ? 90 : 270;
+        }else {
+            boidAngle = Math.toDegrees(Math.atan(boid.getVelocity()[1]/boid.getVelocity()[0]));
+        }
+        double sourceToBoid;
+        if (source.getPosition()[0]-boid.getPosition()[0] == 0){
+            sourceToBoid = source.getPosition()[0]-boid.getPosition()[0] > 0 ? 90 : 270;
+        }else {
+            sourceToBoid = Math.toDegrees(Math.atan((source.getPosition()[1]-boid.getPosition()[1])/(source.getPosition()[0]-boid.getPosition()[0])));
+        }
+        System.out.println(boidAngle);
+        System.out.println(sourceToBoid);
+        System.out.println(viewingAngle);
+        System.out.println(Math.abs(boidAngle-sourceToBoid));
+        System.out.println(Math.abs(boidAngle-sourceToBoid) < viewingAngle);
+        System.out.println();
+        return Math.abs(boidAngle-sourceToBoid) < viewingAngle/2;
 
     }
 
