@@ -200,11 +200,9 @@ public class Controller implements Observer {
     }
 
     private void drawBoids(GraphicsContext graphicsContext) {
-        graphicsContext.setFill(Color.GREEN);
         for (Ally ally : boardManager.getAllies()) {
             drawBoid(graphicsContext, ally);
         }
-        graphicsContext.setFill(Color.RED);
         for (Predator predator : boardManager.getPredators()) {
             drawBoid(graphicsContext, predator);
         }
@@ -214,8 +212,10 @@ public class Controller implements Observer {
         int anglePeak;
         if (boid.getVelocity()[0] == 0) {
             anglePeak = (boid.getVelocity()[1] > 0) ? 90 : 270;
-        } else {
-            anglePeak = (int) Math.atan(boid.getVelocity()[1] / boid.getVelocity()[0]);
+        }else if(boid.getVelocity()[1] == 0) {
+            anglePeak = boid.getVelocity()[0] > 0 ? 0 : 180;
+        }else {
+            anglePeak = (int) Math.toDegrees(Math.atan(boid.getVelocity()[1] / boid.getVelocity()[0]));
         }
         int angleLeft = (anglePeak - 150 < 0) ? anglePeak - 150 + 360 : anglePeak - 150;
         int angleRight = (anglePeak + 150 >= 360) ? anglePeak + 150 - 360 : anglePeak + 150;
