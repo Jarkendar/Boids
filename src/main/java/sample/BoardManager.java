@@ -31,7 +31,7 @@ public class BoardManager extends Observable implements Runnable {
         this.viewingAngle = viewingAngle;
         this.minimalDistance = minimalDistance;
         this.maxVelocity = maxVelocity;
-        startVelocity[0] = 0;//maxVelocity / 2.0;
+        startVelocity[0] = -maxVelocity / 2.0;
         startVelocity[1] = maxVelocity / 2.0;
         createPredators(predatorNumber);
         createAllies(allyNumber);
@@ -127,26 +127,28 @@ public class BoardManager extends Observable implements Runnable {
     }
 
     private boolean isAllyVisible(Ally source, Ally boid){
-        double boidAngle;
-        if (boid.getVelocity()[0] == 0){
-            boidAngle = boid.getVelocity()[1] > 0 ? 90 : 270;
-        }else {
-            boidAngle = Math.toDegrees(Math.atan(boid.getVelocity()[1]/boid.getVelocity()[0]));
-        }
-        double sourceToBoid;
-        if (source.getPosition()[0]-boid.getPosition()[0] == 0){
-            sourceToBoid = source.getPosition()[0]-boid.getPosition()[0] > 0 ? 90 : 270;
-        }else {
-            sourceToBoid = Math.toDegrees(Math.atan((source.getPosition()[1]-boid.getPosition()[1])/(source.getPosition()[0]-boid.getPosition()[0])));
-        }
-        System.out.println(boidAngle);
-        System.out.println(sourceToBoid);
-        System.out.println(viewingAngle);
-        System.out.println(Math.abs(boidAngle-sourceToBoid));
-        System.out.println(Math.abs(boidAngle-sourceToBoid) < viewingAngle);
-        System.out.println();
+        double boidAngle = calcAngle(boid.getVelocity()[1],boid.getVelocity()[0]);
+        double sourceToBoid = calcAngle(source.getPosition()[1]-boid.getPosition()[1],source.getPosition()[0]-boid.getPosition()[0]);
         return Math.abs(boidAngle-sourceToBoid) < viewingAngle/2;
+    }
 
+    private double calcAngle(double numerator, double denumerator){
+        double angle;
+        if (denumerator == 0) {
+            angle = (numerator > 0) ? 90 : 270;
+        }else if(numerator == 0) {
+            angle = denumerator > 0 ? 0 : 180;
+        }else {
+            angle = (int) Math.toDegrees(Math.atan(numerator/denumerator));
+            if (denumerator < 0){
+                if (angle < 0){
+                    angle-= 180;
+                }else {
+                    angle+= 180;
+                }
+            }
+        }
+        return angle < 0 ? angle + 360 : angle;
     }
 
     public LinkedList<Predator> getPredators() {
