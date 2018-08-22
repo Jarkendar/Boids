@@ -192,9 +192,18 @@ public class Controller implements Observer {
         return text.matches("^\\d+$");
     }
 
-    private void drawBoids() {
+
+    private void refreshCanvas(){
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+        clearCanvas(graphicsContext);
+        drawBoids(graphicsContext);
+    }
+
+    private void clearCanvas(GraphicsContext graphicsContext){
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+    }
+
+    private void drawBoids(GraphicsContext graphicsContext) {
         graphicsContext.setFill(Color.GREEN);
         for (Ally ally : boardManager.getAllies()) {
             drawAlly(graphicsContext, ally);
@@ -239,7 +248,7 @@ public class Controller implements Observer {
 
     @Override
     public void update(Observable observable, Object arg) {
-
+        refreshCanvas();
     }
 
     public void startSimulation(ActionEvent actionEvent) {
@@ -247,6 +256,6 @@ public class Controller implements Observer {
                 Integer.parseInt(predatorCountField.getText()), Integer.parseInt(allyCountField.getText()),
                 Integer.parseInt(neighborhoodRadiusField.getText()), Integer.parseInt(viewingAngleField.getText()),
                 Integer.parseInt(minimalDistanceField.getText()), Integer.parseInt(maxVelocityField.getText()));
-        drawBoids();
+        refreshCanvas();
     }
 }
