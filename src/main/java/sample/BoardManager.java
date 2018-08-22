@@ -19,10 +19,10 @@ public class BoardManager extends Observable implements Runnable {
     private double maxVelocity = 0;
     private double[] startVelocity = {0, 0};
 
-    private double weightOfSpeed = 100;
-    private double weightOfDistance = 100;
-    private double weightOfDisturbances = 100;
-    private double weightOfMinimalDistance = 100;
+    private double weightOfSpeed = 1.0;
+    private double weightOfDistance = 1.0;
+    private double weightOfDisturbances = 1.0;
+    private double weightOfMinimalDistance = 1.0;
 
     public BoardManager(double boardWeight, double boardHeight, int predatorNumber, int allyNumber, double neighborhoodRadius, double viewingAngle, double minimalDistance, double maxVelocity) {
         this.boardWeight = boardWeight;
@@ -95,6 +95,7 @@ public class BoardManager extends Observable implements Runnable {
         while (true) {
             for (Ally ally : allies) {
                 LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
+                firstBoidsRule(ally, neighbourhood);
             }
             break;
         }
@@ -141,6 +142,30 @@ public class BoardManager extends Observable implements Runnable {
         }
         return angle < 0 ? angle + 360 : angle;
     }
+
+    /**
+     * First boid rule. Boid adjust speed to neighbour boids.
+     * @param boid - center boid
+     * @param neighbours - boids in neighbourhoods
+     */
+    private void firstBoidsRule(Ally boid, LinkedList<Ally> neighbours){
+        if (!neighbours.isEmpty()){
+            double sum = 0.0;
+            for (Ally ally : neighbours){
+                sum = ally.getVelocity()[0];
+            }
+            double avgVX = sum/neighbours.size();
+            for (Ally ally : neighbours){
+                sum = ally.getVelocity()[1];
+            }
+            double avgVY = sum/neighbours.size();
+
+            boid.setVelocity(new double[] {boid.getVelocity()[0]+(weightOfSpeed*(avgVX-boid.getVelocity()[0]))
+                    , boid.getVelocity()[1]+(weightOfSpeed*(avgVY-boid.getVelocity()[1]))});
+        }
+    }
+
+
 
     public LinkedList<Predator> getPredators() {
         return predators;
