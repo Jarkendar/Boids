@@ -216,7 +216,15 @@ public class Controller implements Observer {
             anglePeak = boid.getVelocity()[0] > 0 ? 0 : 180;
         }else {
             anglePeak = (int) Math.toDegrees(Math.atan(boid.getVelocity()[1] / boid.getVelocity()[0]));
+            if (boid.getVelocity()[0] < 0){
+                if (anglePeak < 0){
+                    anglePeak-= 180;
+                }else {
+                    anglePeak+= 180;
+                }
+            }
         }
+        anglePeak = anglePeak < 0 ? anglePeak + 360 : anglePeak;
         int angleLeft = (anglePeak - 150 < 0) ? anglePeak - 150 + 360 : anglePeak - 150;
         int angleRight = (anglePeak + 150 >= 360) ? anglePeak + 150 - 360 : anglePeak + 150;
         double correctPosX = -CENTER[0] + boid.getPosition()[0];
