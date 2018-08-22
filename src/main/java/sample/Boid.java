@@ -1,38 +1,38 @@
 package sample;
 
+import java.util.Arrays;
+
 public abstract class Boid {
 
-    private int[] position;// 0->X; 1->Y
-    private int velocity;
-    private int rotation;
+    private double[] position;// 0->X; 1->Y
+    private double[] velocity;// 0->VX; 1->VY
 
-    public Boid(int[] position, int velocity, int rotation) {
+    public Boid(double[] position, double[] velocity) {
         this.position = position;
         this.velocity = velocity;
-        this.rotation = rotation;
     }
 
-    public int[] getPosition() {
+    public double[] getPosition() {
         return position;
     }
 
-    public void setPosition(int[] position) {
+    public void setPosition(double[] position) {
         this.position = position;
     }
 
-    public int getVelocity() {
+    public double[] getVelocity() {
         return velocity;
     }
 
-    public void setVelocity(int velocity) {
+    public void setVelocity(double[] velocity) {
         this.velocity = velocity;
     }
 
-    public int getRotation() {
-        return rotation;
-    }
-
-    public void setRotation(int rotation) {
-        this.rotation = rotation;
+    @Override
+    public String toString() {
+        return "Boid{" +
+                "position=" + Arrays.toString(position) +
+                ", velocity=" + Arrays.toString(velocity) +
+                '}';
     }
 }

@@ -1,7 +1,12 @@
 package sample;
 
 public class Predator extends Boid {
-    public Predator(int[] position, int velocity, int rotation) {
-        super(position, velocity, rotation);
+    public Predator(double[] position, double[] velocity) {
+        super(position, velocity);
+    }
+
+    @Override
+    public String toString() {
+        return "Predator{} " + super.toString();
     }
 }

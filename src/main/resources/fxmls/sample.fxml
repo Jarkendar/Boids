@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
-
 <GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.121"
           xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <children>
@@ -23,13 +20,13 @@
                 </Label>
                 <Label layoutX="550.0" layoutY="90.0" text="Allies count"/>
                 <TextField fx:id="allyCountField" layoutX="710.0" layoutY="85.0" maxWidth="76.0" promptText="1-100"
-                           text="10"/>
+                           text="3"/>
                 <Label layoutX="550.0" layoutY="118.0" text="Predators count"/>
                 <TextField fx:id="predatorCountField" layoutX="710.0" layoutY="113.0" maxWidth="76.0" promptText="0-10"
                            text="1"/>
                 <Label layoutX="550.0" layoutY="146.0" text="Neighborhood radius"/>
                 <TextField fx:id="neighborhoodRadiusField" layoutX="710.0" layoutY="141.0" maxWidth="76.0"
-                           promptText="px" text="20"/>
+                           promptText="px" text="200"/>
                 <Label layoutX="550.0" layoutY="174.0" text="Viewing angle"/>
                 <TextField fx:id="viewingAngleField" layoutX="710.0" layoutY="169.0" maxWidth="76.0" promptText="°"
                            text="120"/>
@@ -52,7 +49,8 @@
                 <TextField fx:id="maxVelocityField" layoutX="710.0" layoutY="337.0" maxWidth="76.0" promptText="px/step"
                            text="4"/>
                 <Button fx:id="updateButton" layoutX="550.0" layoutY="728.0" maxHeight="58.0" maxWidth="236.0"
-                        minHeight="58.0" minWidth="236.0" mnemonicParsing="false" text="Update"/>
+                        minHeight="58.0" minWidth="236.0" mnemonicParsing="false" text="Update"
+                        onAction="#startSimulation"/>
             </children>
         </AnchorPane>
     </children>
