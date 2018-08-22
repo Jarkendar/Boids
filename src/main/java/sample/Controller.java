@@ -5,7 +5,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 import java.util.Observable;
@@ -30,9 +29,6 @@ public class Controller implements Observer {
     public TextField weightOfDisturbancesField;
     public TextField maxVelocityField;
     public Button updateButton;
-
-    private Image allyImage = new Image("images/ally.png");
-    private Image predatorImage = new Image("images/predator.png");
 
     private BoardManager boardManager;
 
@@ -206,43 +202,32 @@ public class Controller implements Observer {
     private void drawBoids(GraphicsContext graphicsContext) {
         graphicsContext.setFill(Color.GREEN);
         for (Ally ally : boardManager.getAllies()) {
-            drawAlly(graphicsContext, ally);
+            drawBoid(graphicsContext, ally);
         }
         graphicsContext.setFill(Color.RED);
         for (Predator predator : boardManager.getPredators()) {
-            drawPredator(graphicsContext, predator);
+            drawBoid(graphicsContext, predator);
         }
     }
 
-    private void drawAlly(GraphicsContext graphicsContext, Ally ally) {
+    private void drawBoid(GraphicsContext graphicsContext, Boid boid){
         int anglePeak;
-        if (ally.getVelocity()[0] == 0) {
-            anglePeak = (ally.getVelocity()[1] > 0) ? 90 : -90;
+        if (boid.getVelocity()[0] == 0) {
+            anglePeak = (boid.getVelocity()[1] > 0) ? 90 : 270;
         } else {
-            anglePeak = (int) Math.atan(ally.getVelocity()[1] / ally.getVelocity()[0]);
+            anglePeak = (int) Math.atan(boid.getVelocity()[1] / boid.getVelocity()[0]);
         }
         int angleLeft = (anglePeak - 150 < 0) ? anglePeak - 150 + 360 : anglePeak - 150;
         int angleRight = (anglePeak + 150 >= 360) ? anglePeak + 150 - 360 : anglePeak + 150;
-        double correctPosX = -CENTER[0] + ally.getPosition()[0];
-        double correctPosY = -CENTER[1] + ally.getPosition()[1];
+        double correctPosX = -CENTER[0] + boid.getPosition()[0];
+        double correctPosY = -CENTER[1] + boid.getPosition()[1];
         double[] posX = new double[]{shieldOfPositions[angleLeft][0] + correctPosX, shieldOfPositions[anglePeak][0] + correctPosX, shieldOfPositions[angleRight][0] + correctPosX};
         double[] posY = new double[]{shieldOfPositions[angleLeft][1] + correctPosY, shieldOfPositions[anglePeak][1] + correctPosY, shieldOfPositions[angleRight][1] + correctPosY};
-        graphicsContext.fillPolygon(posX, posY, 3);
-    }
-
-    private void drawPredator(GraphicsContext graphicsContext, Predator predator) {
-        int anglePeak;
-        if (predator.getVelocity()[0] == 0) {
-            anglePeak = (predator.getVelocity()[1] > 0) ? 90 : -90;
-        } else {
-            anglePeak = (int) Math.atan(predator.getVelocity()[1] / predator.getVelocity()[0]);
+        if (boid instanceof Ally){
+            graphicsContext.setFill(Color.GREEN);
+        }else if (boid instanceof Predator){
+            graphicsContext.setFill(Color.RED);
         }
-        int angleLeft = (anglePeak - 150 < 0) ? anglePeak - 150 + 360 : anglePeak - 150;
-        int angleRight = (anglePeak + 150 >= 360) ? anglePeak + 150 - 360 : anglePeak + 150;
-        double correctPosX = -CENTER[0] + predator.getPosition()[0];
-        double correctPosY = -CENTER[1] + predator.getPosition()[1];
-        double[] posX = new double[]{shieldOfPositions[angleLeft][0] + correctPosX, shieldOfPositions[anglePeak][0] + correctPosX, shieldOfPositions[angleRight][0] + correctPosX};
-        double[] posY = new double[]{shieldOfPositions[angleLeft][1] + correctPosY, shieldOfPositions[anglePeak][1] + correctPosY, shieldOfPositions[angleRight][1] + correctPosY};
         graphicsContext.fillPolygon(posX, posY, 3);
     }
 
@@ -256,6 +241,9 @@ public class Controller implements Observer {
                 Integer.parseInt(predatorCountField.getText()), Integer.parseInt(allyCountField.getText()),
                 Integer.parseInt(neighborhoodRadiusField.getText()), Integer.parseInt(viewingAngleField.getText()),
                 Integer.parseInt(minimalDistanceField.getText()), Integer.parseInt(maxVelocityField.getText()));
+        Thread thread = new Thread(boardManager);
+        thread.setDaemon(true);
+        thread.start();
         refreshCanvas();
     }
 }
