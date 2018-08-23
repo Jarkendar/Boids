@@ -9,8 +9,10 @@ import static java.lang.Math.*;
 
 public class BoardManager extends Observable implements Runnable {
 
+    private static final double CHANGE_VELOCITY_BESIDE_WALL = 0.5;
+    private static final double ACCELERATE = 0.1;
     private LinkedList<Observer> observers = new LinkedList<>();
-    private double boardWeight;
+    private double boardWidht;
     private double boardHeight;
 
     private LinkedList<Predator> predators = new LinkedList<>();
@@ -26,8 +28,8 @@ public class BoardManager extends Observable implements Runnable {
     private double weightOfDisturbances = 1.0;
     private double weightOfMinimalDistance = 1.0;
 
-    public BoardManager(double boardWeight, double boardHeight, int predatorNumber, int allyNumber, double neighbourhoodRadius, double viewingAngle, double minimalDistance, double maxVelocity) {
-        this.boardWeight = boardWeight;
+    public BoardManager(double boardWidht, double boardHeight, int predatorNumber, int allyNumber, double neighbourhoodRadius, double viewingAngle, double minimalDistance, double maxVelocity) {
+        this.boardWidht = boardWidht;
         this.boardHeight = boardHeight;
         this.neighbourhoodRadius = neighbourhoodRadius;
         this.viewingAngle = viewingAngle;
@@ -39,8 +41,8 @@ public class BoardManager extends Observable implements Runnable {
         createAllies(allyNumber);
     }
 
-    public BoardManager(double boardWeight, double boardHeight, int predatorNumber, int allyNumber, double neighbourhoodRadius, double viewingAngle, double minimalDistance, double maxVelocity, double weightOfSpeed, double weightOfDistance, double weightOfDisturbances, double weightOfMinimalDistance) {
-        this.boardWeight = boardWeight;
+    public BoardManager(double boardWidht, double boardHeight, int predatorNumber, int allyNumber, double neighbourhoodRadius, double viewingAngle, double minimalDistance, double maxVelocity, double weightOfSpeed, double weightOfDistance, double weightOfDisturbances, double weightOfMinimalDistance) {
+        this.boardWidht = boardWidht;
         this.boardHeight = boardHeight;
         this.neighbourhoodRadius = neighbourhoodRadius;
         this.viewingAngle = viewingAngle;
@@ -72,7 +74,7 @@ public class BoardManager extends Observable implements Runnable {
         Random random = new Random(seed);
         double[] position = new double[2];
         do {
-            position[0] = random.nextDouble() * boardWeight;
+            position[0] = random.nextDouble() * boardWidht;
             position[1] = random.nextDouble() * boardHeight;
         } while (!isAvailableBoidsPositions(position));
         return position;
@@ -102,8 +104,35 @@ public class BoardManager extends Observable implements Runnable {
                     secondBoidsRule(ally, neighbourhood);
                     thirdBoidsRule(ally, neighbourhood);
                 }
+                boidBesideWall(ally);
+                tryAccelerate(ally);
             }
-            break;
+        }
+    }
+    
+    private void move(Boid boid){
+        double newPosX = (boid.getPosition()[0] + boid.getVelocity()[0]);
+        double newPosY = (boid.getPosition()[1] + boid.getVelocity()[1]);
+        boid.setPosition(new double[]{newPosX, newPosY});
+        tryAccelerate(boid);
+    }
+
+    private void tryAccelerate(Boid boid){
+        double newVX = (boid.getVelocity()[0] > 0) ? boid.getVelocity()[0]+ maxVelocity*ACCELERATE : boid.getVelocity()[0]-maxVelocity*ACCELERATE;
+        double newVY = (boid.getVelocity()[1] > 0) ? boid.getVelocity()[1]+ maxVelocity*ACCELERATE : boid.getVelocity()[1]-maxVelocity*ACCELERATE;
+        boid.setVelocity(new double[]{newVX, newVY});
+    }
+
+    private void boidBesideWall(Boid boid){
+        if (boid.getPosition()[0] < 0+minimalDistance){
+            boid.setVelocity(new double[]{boid.getVelocity()[0]+CHANGE_VELOCITY_BESIDE_WALL,boid.getVelocity()[1]});
+        }else if (boid.getPosition()[0] > boardWidht-minimalDistance){
+            boid.setVelocity(new double[]{boid.getVelocity()[0]-CHANGE_VELOCITY_BESIDE_WALL,boid.getVelocity()[1]});
+        }
+        if (boid.getPosition()[1] < 0+minimalDistance){
+            boid.setVelocity(new double[]{boid.getVelocity()[0],boid.getVelocity()[1]+CHANGE_VELOCITY_BESIDE_WALL});
+        }else if (boid.getPosition()[1] > boardHeight-minimalDistance){
+            boid.setVelocity(new double[]{boid.getVelocity()[0],boid.getVelocity()[1]-CHANGE_VELOCITY_BESIDE_WALL});
         }
     }
 
