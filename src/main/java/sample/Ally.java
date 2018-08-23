@@ -9,4 +9,8 @@ public class Ally extends Boid {
     public String toString() {
         return "Ally{} " + super.toString();
     }
+
+    public Ally clone(){
+        return new Ally(this.getPosition(), this.getVelocity());
+    }
 }

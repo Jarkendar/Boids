@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 
+import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -189,22 +190,21 @@ public class Controller implements Observer {
     }
 
 
-    private void refreshCanvas() {
+    private void refreshCanvas(LinkedList<Boid> boids) {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         clearCanvas(graphicsContext);
-        drawBoids(graphicsContext);
+        drawBoids(graphicsContext, boids);
     }
 
     private void clearCanvas(GraphicsContext graphicsContext) {
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
-    private void drawBoids(GraphicsContext graphicsContext) {
-        for (Ally ally : boardManager.getAllies()) {
-            drawBoid(graphicsContext, ally);
-        }
-        for (Predator predator : boardManager.getPredators()) {
-            drawBoid(graphicsContext, predator);
+    private void drawBoids(GraphicsContext graphicsContext, LinkedList<Boid> boids) {
+        System.out.println("Tour "+canvas.getWidth() + " " + canvas.getHeight());
+        for (Boid boid : boids){
+            System.out.println(boid);
+            drawBoid(graphicsContext, boid);
         }
     }
 
@@ -241,17 +241,20 @@ public class Controller implements Observer {
 
     @Override
     public void update(Observable observable, Object arg) {
-        refreshCanvas();
+        refreshCanvas(((LinkedList<Boid>)arg));
     }
 
     public void startSimulation(ActionEvent actionEvent) {
+        if (boardManager != null){
+            boardManager.deleteObservers();
+        }
         boardManager = new BoardManager(canvas.getWidth(), canvas.getHeight(),
                 Integer.parseInt(predatorCountField.getText()), Integer.parseInt(allyCountField.getText()),
                 Integer.parseInt(neighborhoodRadiusField.getText()), Integer.parseInt(viewingAngleField.getText()),
                 Integer.parseInt(minimalDistanceField.getText()), Integer.parseInt(maxVelocityField.getText()));
+        boardManager.addObserver(this);
         Thread thread = new Thread(boardManager);
         thread.setDaemon(true);
         thread.start();
-        refreshCanvas();
     }
 }

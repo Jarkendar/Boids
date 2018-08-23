@@ -9,4 +9,8 @@ public class Predator extends Boid {
     public String toString() {
         return "Predator{} " + super.toString();
     }
+
+    public Predator clone(){
+        return new Predator(this.getPosition(), this.getVelocity());
+    }
 }

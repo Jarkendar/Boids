@@ -11,8 +11,10 @@ public class BoardManager extends Observable implements Runnable {
 
     private static final double CHANGE_VELOCITY_BESIDE_WALL = 0.5;
     private static final double ACCELERATE = 0.1;
+    private static final double MINIMAL_DISTANCE_TO_WALL = 20;
+    private static final Random random = new Random();
     private LinkedList<Observer> observers = new LinkedList<>();
-    private double boardWidht;
+    private double boardWidth;
     private double boardHeight;
 
     private LinkedList<Predator> predators = new LinkedList<>();
@@ -28,8 +30,8 @@ public class BoardManager extends Observable implements Runnable {
     private double weightOfDisturbances = 1.0;
     private double weightOfMinimalDistance = 1.0;
 
-    public BoardManager(double boardWidht, double boardHeight, int predatorNumber, int allyNumber, double neighbourhoodRadius, double viewingAngle, double minimalDistance, double maxVelocity) {
-        this.boardWidht = boardWidht;
+    public BoardManager(double boardWidth, double boardHeight, int predatorNumber, int allyNumber, double neighbourhoodRadius, double viewingAngle, double minimalDistance, double maxVelocity) {
+        this.boardWidth = boardWidth;
         this.boardHeight = boardHeight;
         this.neighbourhoodRadius = neighbourhoodRadius;
         this.viewingAngle = viewingAngle;
@@ -41,8 +43,8 @@ public class BoardManager extends Observable implements Runnable {
         createAllies(allyNumber);
     }
 
-    public BoardManager(double boardWidht, double boardHeight, int predatorNumber, int allyNumber, double neighbourhoodRadius, double viewingAngle, double minimalDistance, double maxVelocity, double weightOfSpeed, double weightOfDistance, double weightOfDisturbances, double weightOfMinimalDistance) {
-        this.boardWidht = boardWidht;
+    public BoardManager(double boardWidth, double boardHeight, int predatorNumber, int allyNumber, double neighbourhoodRadius, double viewingAngle, double minimalDistance, double maxVelocity, double weightOfSpeed, double weightOfDistance, double weightOfDisturbances, double weightOfMinimalDistance) {
+        this.boardWidth = boardWidth;
         this.boardHeight = boardHeight;
         this.neighbourhoodRadius = neighbourhoodRadius;
         this.viewingAngle = viewingAngle;
@@ -74,7 +76,7 @@ public class BoardManager extends Observable implements Runnable {
         Random random = new Random(seed);
         double[] position = new double[2];
         do {
-            position[0] = random.nextDouble() * boardWidht;
+            position[0] = random.nextDouble() * boardWidth;
             position[1] = random.nextDouble() * boardHeight;
         } while (!isAvailableBoidsPositions(position));
         return position;
@@ -105,7 +107,17 @@ public class BoardManager extends Observable implements Runnable {
                     thirdBoidsRule(ally, neighbourhood);
                 }
                 boidBesideWall(ally);
+                move(ally);
                 tryAccelerate(ally);
+            }
+
+            notifyObservers(copyBoids());
+            try {
+                synchronized (this) {
+                    wait(42);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -113,25 +125,37 @@ public class BoardManager extends Observable implements Runnable {
     private void move(Boid boid){
         double newPosX = (boid.getPosition()[0] + boid.getVelocity()[0]);
         double newPosY = (boid.getPosition()[1] + boid.getVelocity()[1]);
+        if (newPosX < 0 ){
+            newPosX = 0;
+        }else if (newPosX > boardWidth){
+            newPosX = boardWidth;
+        }
+        if (newPosY < 0){
+            newPosY = 0;
+        }else if (newPosY> boardHeight){
+            newPosY = boardHeight;
+        }
         boid.setPosition(new double[]{newPosX, newPosY});
         tryAccelerate(boid);
     }
 
     private void tryAccelerate(Boid boid){
-        double newVX = (boid.getVelocity()[0] > 0) ? boid.getVelocity()[0]+ maxVelocity*ACCELERATE : boid.getVelocity()[0]-maxVelocity*ACCELERATE;
-        double newVY = (boid.getVelocity()[1] > 0) ? boid.getVelocity()[1]+ maxVelocity*ACCELERATE : boid.getVelocity()[1]-maxVelocity*ACCELERATE;
+        double newVX = boid.getVelocity()[0] + (random.nextDouble()-0.5)*0.2;
+        double newVY = boid.getVelocity()[1] + (random.nextDouble()-0.5)*0.2;
+        newVX = abs(newVX) > maxVelocity ? newVX*0.75 : newVX;
+        newVY = abs(newVY) > maxVelocity ? newVY*0.75 : newVY;
         boid.setVelocity(new double[]{newVX, newVY});
     }
 
     private void boidBesideWall(Boid boid){
-        if (boid.getPosition()[0] < 0+minimalDistance){
+        if (boid.getPosition()[0] < 0+MINIMAL_DISTANCE_TO_WALL){
             boid.setVelocity(new double[]{boid.getVelocity()[0]+CHANGE_VELOCITY_BESIDE_WALL,boid.getVelocity()[1]});
-        }else if (boid.getPosition()[0] > boardWidht-minimalDistance){
+        }else if (boid.getPosition()[0] > boardWidth -MINIMAL_DISTANCE_TO_WALL){
             boid.setVelocity(new double[]{boid.getVelocity()[0]-CHANGE_VELOCITY_BESIDE_WALL,boid.getVelocity()[1]});
         }
-        if (boid.getPosition()[1] < 0+minimalDistance){
+        if (boid.getPosition()[1] < 0+MINIMAL_DISTANCE_TO_WALL){
             boid.setVelocity(new double[]{boid.getVelocity()[0],boid.getVelocity()[1]+CHANGE_VELOCITY_BESIDE_WALL});
-        }else if (boid.getPosition()[1] > boardHeight-minimalDistance){
+        }else if (boid.getPosition()[1] > boardHeight-MINIMAL_DISTANCE_TO_WALL){
             boid.setVelocity(new double[]{boid.getVelocity()[0],boid.getVelocity()[1]-CHANGE_VELOCITY_BESIDE_WALL});
         }
     }
@@ -156,7 +180,7 @@ public class BoardManager extends Observable implements Runnable {
     private boolean isAllyVisible(Ally source, Ally boid) {
         double boidAngle = calcAngle(boid.getVelocity()[1], boid.getVelocity()[0]);
         double sourceToBoid = calcAngle(source.getPosition()[1] - boid.getPosition()[1], source.getPosition()[0] - boid.getPosition()[0]);
-        return abs(boidAngle - sourceToBoid) < viewingAngle / 2;
+        return abs(boidAngle - sourceToBoid) < viewingAngle;
     }
 
     private double calcAngle(double numerator, double denumerator) {
@@ -185,17 +209,14 @@ public class BoardManager extends Observable implements Runnable {
      * @param neighbours - boids in neighbourhoods
      */
     private void firstBoidsRule(Ally boid, LinkedList<Ally> neighbours) {
-        double sum = 0.0;
+        double sumX = 0.0;
+        double sumY = 0.0;
         for (Ally ally : neighbours) {
-            sum += ally.getVelocity()[0];
+            sumX += ally.getVelocity()[0];
+            sumY += ally.getVelocity()[1];
         }
-        double avgVX = sum / neighbours.size();
-        sum = 0.0;
-        for (Ally ally : neighbours) {
-            sum += ally.getVelocity()[1];
-        }
-        double avgVY = sum / neighbours.size();
-
+        double avgVX = sumX / neighbours.size();
+        double avgVY = sumY / neighbours.size();
         boid.setVelocity(new double[]{boid.getVelocity()[0] + (weightOfSpeed * (avgVX - boid.getVelocity()[0]))
                 , boid.getVelocity()[1] + (weightOfSpeed * (avgVY - boid.getVelocity()[1]))});
     }
@@ -216,7 +237,7 @@ public class BoardManager extends Observable implements Runnable {
         }
         double avgDistance = sum / neighbours.size();
         for (int i = 0; i < neighbours.size(); ++i) {
-            double multiplier = weightOfDistance * (distances[i] * avgDistance) / (distances[i]);
+            double multiplier = weightOfDistance * (distances[i] - avgDistance) / (distances[i]);
             double additionX = multiplier * (neighbours.get(i).getPosition()[0] - boid.getPosition()[0]);
             double additionY = multiplier * (neighbours.get(i).getPosition()[1] - boid.getPosition()[1]);
             boid.setVelocity(new double[]{boid.getVelocity()[0] + additionX, boid.getVelocity()[1] + additionY});
@@ -262,6 +283,17 @@ public class BoardManager extends Observable implements Runnable {
         for (Observer observer : observers) {
             observer.update(this, arg);
         }
+    }
+
+    private LinkedList<Boid> copyBoids(){
+        LinkedList<Boid> boids = new LinkedList<>();
+        for (Ally ally : allies){
+            boids.add(ally.clone());
+        }
+        for (Predator predator : predators){
+            boids.add(predator.clone());
+        }
+        return boids;
     }
 
     @Override
