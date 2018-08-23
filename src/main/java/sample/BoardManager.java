@@ -100,6 +100,7 @@ public class BoardManager extends Observable implements Runnable {
                 if (!neighbourhood.isEmpty()) {
                     firstBoidsRule(ally, neighbourhood);
                     secondBoidsRule(ally, neighbourhood);
+                    thirdBoidsRule(ally, neighbourhood);
                 }
             }
             break;
@@ -149,7 +150,7 @@ public class BoardManager extends Observable implements Runnable {
     }
 
     /**
-     * First boid rule. Boid adjust speed to neighbour boids.
+     * First boids rule. Boid adjust speed to neighbour boids.
      *
      * @param boid       - center boid
      * @param neighbours - boids in neighbourhoods
@@ -171,7 +172,7 @@ public class BoardManager extends Observable implements Runnable {
     }
 
     /**
-     * Second boid rule. Every boid want to be in center of group.
+     * Second boids rule. Every boid want to be in center of group.
      *
      * @param boid       - center boid
      * @param neighbours - boids in neighbourhoods
@@ -190,6 +191,22 @@ public class BoardManager extends Observable implements Runnable {
             double additionX = multiplier * (neighbours.get(i).getPosition()[0] - boid.getPosition()[0]);
             double additionY = multiplier * (neighbours.get(i).getPosition()[1] - boid.getPosition()[1]);
             boid.setVelocity(new double[]{boid.getVelocity()[0] + additionX, boid.getVelocity()[1] + additionY});
+        }
+    }
+
+    /**
+     * Third boids rule. Every boid keep secure distance from neighbour boids.
+     * @param boid - center boid
+     * @param neighbours - boids in neighbourhoods
+     */
+    private void thirdBoidsRule(Ally boid, LinkedList<Ally> neighbours){
+        for (int i = 0; i<neighbours.size(); ++i){
+            double distance = sqrt(pow(neighbours.get(i).getPosition()[0] - boid.getPosition()[0], 2) + pow(neighbours.get(i).getPosition()[1] - boid.getPosition()[1], 2));
+            if (distance < minimalDistance){
+                double additionX = weightOfMinimalDistance * ((((neighbours.get(i).getPosition()[0]-boid.getPosition()[0])*minimalDistance)/distance)-(neighbours.get(i).getPosition()[0]-boid.getPosition()[0]));
+                double additionY = weightOfMinimalDistance * ((((neighbours.get(i).getPosition()[1]-boid.getPosition()[1])*minimalDistance)/distance)-(neighbours.get(i).getPosition()[1]-boid.getPosition()[1]));
+                boid.setVelocity(new double[]{boid.getVelocity()[0]-additionX, boid.getVelocity()[1]-additionY});
+            }
         }
     }
 
