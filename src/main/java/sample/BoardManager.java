@@ -107,11 +107,16 @@ public class BoardManager extends Observable implements Runnable {
     public void run() {
         while (true) {
             for (Ally ally : allies) {
-                LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
-                if (!neighbourhood.isEmpty()) {
-                    firstBoidsRule(ally, neighbourhood);
-                    secondBoidsRule(ally, neighbourhood);
-                    thirdBoidsRule(ally, neighbourhood);
+                LinkedList<Predator> closePredators = getClosePredators(ally);
+                if (closePredators == null) {
+                    LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
+                    if (!neighbourhood.isEmpty()) {
+                        firstBoidsRule(ally, neighbourhood);
+                        secondBoidsRule(ally, neighbourhood);
+                        thirdBoidsRule(ally, neighbourhood);
+                    }
+                } else {
+
                 }
                 boidBesideWall(ally);
                 move(ally);
@@ -178,18 +183,31 @@ public class BoardManager extends Observable implements Runnable {
             if (boid == ally) {
                 continue;
             }
-            if (isAllyNeighbourhoodDistance(boid, ally) && isAllyVisible(boid, ally)) {
+            if (isBoidNeighbourhoodDistance(boid, ally) && isBoidVisible(boid, ally)) {
                 neighbourList.addLast(ally);
             }
         }
         return neighbourList;
     }
 
-    private boolean isAllyNeighbourhoodDistance(Ally source, Ally boid) {
+    private LinkedList<Predator> getClosePredators(Ally boid){
+        LinkedList<Predator> closePredators = null;
+        for (Predator predator : predators){
+            if (isBoidNeighbourhoodDistance(boid, predator) && isBoidVisible(boid, predator)){
+                if (closePredators == null){
+                    closePredators = new LinkedList<>();
+                }
+                closePredators.addLast(predator);
+            }
+        }
+        return closePredators;
+    }
+
+    private boolean isBoidNeighbourhoodDistance(Ally source, Boid boid) {
         return sqrt(pow(source.getPosition()[0] - boid.getPosition()[0], 2) + pow(source.getPosition()[1] - boid.getPosition()[1], 2)) < neighbourhoodRadius;
     }
 
-    private boolean isAllyVisible(Ally source, Ally boid) {
+    private boolean isBoidVisible(Ally source, Boid boid) {
         double boidAngle = calcAngle(boid.getVelocity()[1], boid.getVelocity()[0]);
         double sourceToBoid = calcAngle(source.getPosition()[1] - boid.getPosition()[1], source.getPosition()[0] - boid.getPosition()[0]);
         return abs(boidAngle - sourceToBoid) < viewingAngle;
