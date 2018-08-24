@@ -14,6 +14,8 @@ public class BoardManager extends Observable implements Runnable {
     private double boardWidth;
     private double boardHeight;
 
+    private boolean canWork = true;
+
     private LinkedList<Predator> predators = new LinkedList<>();
     private LinkedList<Ally> allies = new LinkedList<>();
     private double neighbourhoodRadius = 0;
@@ -105,7 +107,7 @@ public class BoardManager extends Observable implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (canWork) {
             for (Ally ally : allies) {
                 LinkedList<Predator> closePredators = getClosePredators(ally);
                 if (closePredators == null) {
@@ -360,6 +362,10 @@ public class BoardManager extends Observable implements Runnable {
             boids.add(predator.clone());
         }
         return boids;
+    }
+
+    public void endThreadWork() {
+        canWork = false;
     }
 
     @Override

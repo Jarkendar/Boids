@@ -244,6 +244,7 @@ public class Controller implements Observer {
 
     public void startSimulation(ActionEvent actionEvent) {
         if (boardManager != null){
+            boardManager.endThreadWork();
             boardManager.deleteObservers();
         }
         boardManager = new BoardManager(canvas.getWidth(), canvas.getHeight(),
