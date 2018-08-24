@@ -117,6 +117,11 @@ public class BoardManager extends Observable implements Runnable {
                 move(ally);
                 tryAccelerate(ally);
             }
+            for(Predator predator: predators){
+                boidBesideWall(predator);
+                move(predator);
+                tryAccelerate(predator);
+            }
 
             notifyObservers(copyBoids());
             try {
