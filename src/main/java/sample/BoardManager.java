@@ -81,11 +81,11 @@ public class BoardManager extends Observable implements Runnable {
         return position;
     }
 
-    private double[] randVelocity(long seed){
+    private double[] randVelocity(long seed) {
         Random random = new Random(seed);
         double[] velocity = new double[2];
-        velocity[0] = random.nextDouble()*maxVelocity*(random.nextBoolean() ? 1 : -1);
-        velocity[1] = random.nextDouble()*maxVelocity*(random.nextBoolean() ? 1 : -1);
+        velocity[0] = random.nextDouble() * maxVelocity * (random.nextBoolean() ? 1 : -1);
+        velocity[1] = random.nextDouble() * maxVelocity * (random.nextBoolean() ? 1 : -1);
         return velocity;
     }
 
@@ -122,7 +122,7 @@ public class BoardManager extends Observable implements Runnable {
                 move(ally);
                 tryAccelerate(ally);
             }
-            for(Predator predator: predators){
+            for (Predator predator : predators) {
                 boidBesideWall(predator);
                 move(predator);
                 tryAccelerate(predator);
@@ -138,42 +138,42 @@ public class BoardManager extends Observable implements Runnable {
             }
         }
     }
-    
-    private void move(Boid boid){
+
+    private void move(Boid boid) {
         double newPosX = (boid.getPosition()[0] + boid.getVelocity()[0]);
         double newPosY = (boid.getPosition()[1] + boid.getVelocity()[1]);
-        if (newPosX < 0 ){
+        if (newPosX < 0) {
             newPosX = 0;
-        }else if (newPosX > boardWidth){
+        } else if (newPosX > boardWidth) {
             newPosX = boardWidth;
         }
-        if (newPosY < 0){
+        if (newPosY < 0) {
             newPosY = 0;
-        }else if (newPosY> boardHeight){
+        } else if (newPosY > boardHeight) {
             newPosY = boardHeight;
         }
         boid.setPosition(new double[]{newPosX, newPosY});
         tryAccelerate(boid);
     }
 
-    private void tryAccelerate(Boid boid){
-        double newVX = boid.getVelocity()[0] + (RANDOM.nextDouble()*maxVelocity)*weightOfDisturbances*(RANDOM.nextBoolean() ? 1 : -1);
-        double newVY = boid.getVelocity()[1] + (RANDOM.nextDouble()*maxVelocity)*weightOfDisturbances*(RANDOM.nextBoolean() ? 1 : -1);
-        newVX = abs(newVX) > maxVelocity ? newVX*0.75 : newVX;
-        newVY = abs(newVY) > maxVelocity ? newVY*0.75 : newVY;
+    private void tryAccelerate(Boid boid) {
+        double newVX = boid.getVelocity()[0] + (RANDOM.nextDouble() * maxVelocity) * weightOfDisturbances * (RANDOM.nextBoolean() ? 1 : -1);
+        double newVY = boid.getVelocity()[1] + (RANDOM.nextDouble() * maxVelocity) * weightOfDisturbances * (RANDOM.nextBoolean() ? 1 : -1);
+        newVX = abs(newVX) > maxVelocity ? newVX * 0.75 : newVX;
+        newVY = abs(newVY) > maxVelocity ? newVY * 0.75 : newVY;
         boid.setVelocity(new double[]{newVX, newVY});
     }
 
-    private void boidBesideWall(Boid boid){
-        if (boid.getPosition()[0] < 0+MINIMAL_DISTANCE_TO_WALL){
-            boid.setVelocity(new double[]{boid.getVelocity()[0]+CHANGE_VELOCITY_BESIDE_WALL,boid.getVelocity()[1]});
-        }else if (boid.getPosition()[0] > boardWidth -MINIMAL_DISTANCE_TO_WALL){
-            boid.setVelocity(new double[]{boid.getVelocity()[0]-CHANGE_VELOCITY_BESIDE_WALL,boid.getVelocity()[1]});
+    private void boidBesideWall(Boid boid) {
+        if (boid.getPosition()[0] < 0 + MINIMAL_DISTANCE_TO_WALL) {
+            boid.setVelocity(new double[]{boid.getVelocity()[0] + CHANGE_VELOCITY_BESIDE_WALL, boid.getVelocity()[1]});
+        } else if (boid.getPosition()[0] > boardWidth - MINIMAL_DISTANCE_TO_WALL) {
+            boid.setVelocity(new double[]{boid.getVelocity()[0] - CHANGE_VELOCITY_BESIDE_WALL, boid.getVelocity()[1]});
         }
-        if (boid.getPosition()[1] < 0+MINIMAL_DISTANCE_TO_WALL){
-            boid.setVelocity(new double[]{boid.getVelocity()[0],boid.getVelocity()[1]+CHANGE_VELOCITY_BESIDE_WALL});
-        }else if (boid.getPosition()[1] > boardHeight-MINIMAL_DISTANCE_TO_WALL){
-            boid.setVelocity(new double[]{boid.getVelocity()[0],boid.getVelocity()[1]-CHANGE_VELOCITY_BESIDE_WALL});
+        if (boid.getPosition()[1] < 0 + MINIMAL_DISTANCE_TO_WALL) {
+            boid.setVelocity(new double[]{boid.getVelocity()[0], boid.getVelocity()[1] + CHANGE_VELOCITY_BESIDE_WALL});
+        } else if (boid.getPosition()[1] > boardHeight - MINIMAL_DISTANCE_TO_WALL) {
+            boid.setVelocity(new double[]{boid.getVelocity()[0], boid.getVelocity()[1] - CHANGE_VELOCITY_BESIDE_WALL});
         }
     }
 
@@ -190,11 +190,11 @@ public class BoardManager extends Observable implements Runnable {
         return neighbourList;
     }
 
-    private LinkedList<Predator> getClosePredators(Ally boid){
+    private LinkedList<Predator> getClosePredators(Ally boid) {
         LinkedList<Predator> closePredators = null;
-        for (Predator predator : predators){
-            if (isBoidNeighbourhoodDistance(boid, predator) && isBoidVisible(boid, predator)){
-                if (closePredators == null){
+        for (Predator predator : predators) {
+            if (isBoidNeighbourhoodDistance(boid, predator) && isBoidVisible(boid, predator)) {
+                if (closePredators == null) {
                     closePredators = new LinkedList<>();
                 }
                 closePredators.addLast(predator);
@@ -232,38 +232,39 @@ public class BoardManager extends Observable implements Runnable {
         return angle < 0 ? angle + 360 : angle;
     }
 
-    private void runAwayFromPredators(Ally ally, LinkedList<Predator> closePredators){
+    private void runAwayFromPredators(Ally ally, LinkedList<Predator> closePredators) {
         double angle = 0.0;
-        for (Predator predator : closePredators){
-            angle += calcAngle(ally.getPosition()[1]-predator.getPosition()[1], ally.getPosition()[0]-predator.getPosition()[0]);
+        for (Predator predator : closePredators) {
+            angle += calcAngle(ally.getPosition()[1] - predator.getPosition()[1], ally.getPosition()[0] - predator.getPosition()[0]);
         }
-        angle += 180.0;
-        while (angle >= 360.0){
+        while (angle >= 360.0) {
             angle -= 360.0;
         }
-        double velocityRatio = (angle != 90.0 && angle != 270.0) ? abs(ally.getVelocity()[0])/(abs(ally.getVelocity()[0])+abs(ally.getVelocity()[1])) : 0.0;
+        double velocityRatio = (angle != 90.0 && angle != 270.0) ? abs(ally.getVelocity()[0]) / (abs(ally.getVelocity()[0]) + abs(ally.getVelocity()[1])) : 0.5;
         double newVX = ally.getVelocity()[0];
         double newVY = ally.getVelocity()[1];
-        if (angle == 90.0){
+        double multiplierX = 2.0 * velocityRatio;
+        double multiplierY = 2.0 * (1.0 - velocityRatio);
+        if (angle == 90.0) {
             newVX = abs(newVX) * 2.0;
             newVY /= 2.0;
-        }else if (angle == 270.0){
+        } else if (angle == 270.0) {
             newVX = -abs(newVX) * 2.0;
             newVY /= 2.0;
-        }else if (angle < 90.0){
-            newVX = abs(newVX) * 2.0 * velocityRatio;
-            newVY = abs(newVY) * 2.0 * velocityRatio;
-        }else if (angle < 180.0){
-            newVX = -abs(newVX) * 2.0 * velocityRatio;
-            newVY = abs(newVY) * 2.0 * velocityRatio;
-        }else if (angle < 270.0){
-            newVX = -abs(newVX) * 2.0 * velocityRatio;
-            newVY = -abs(newVY) * 2.0 * velocityRatio;
-        }else if (angle < 360.0){
-            newVX = abs(newVX) * 2.0 * velocityRatio;
-            newVY = -abs(newVY) * 2.0 * velocityRatio;
+        } else if (angle < 90.0) {
+            newVX = abs(newVX) * multiplierX;
+            newVY = abs(newVY) * multiplierY;
+        } else if (angle < 180.0) {
+            newVX = -abs(newVX) * multiplierX;
+            newVY = abs(newVY) * multiplierY;
+        } else if (angle < 270.0) {
+            newVX = -abs(newVX) * multiplierX;
+            newVY = -abs(newVY) * multiplierY;
+        } else if (angle < 360.0) {
+            newVX = abs(newVX) * multiplierX;
+            newVY = -abs(newVY) * multiplierY;
         }
-        ally.setVelocity(new double[] { newVX, newVY});
+        ally.setVelocity(new double[]{newVX, newVY});
     }
 
     /**
@@ -310,10 +311,11 @@ public class BoardManager extends Observable implements Runnable {
 
     /**
      * Third boids rule. Every boid keep secure distance from neighbour boids.
-     * @param boid - center boid
+     *
+     * @param boid       - center boid
      * @param neighbours - boids in neighbourhoods
      */
-    private void thirdBoidsRule(Ally boid, LinkedList<Ally> neighbours){
+    private void thirdBoidsRule(Ally boid, LinkedList<Ally> neighbours) {
         for (Ally neighbour : neighbours) {
             double distance = sqrt(pow(neighbour.getPosition()[0] - boid.getPosition()[0], 2) + pow(neighbour.getPosition()[1] - boid.getPosition()[1], 2));
             if (distance < minimalDistance) {
@@ -349,12 +351,12 @@ public class BoardManager extends Observable implements Runnable {
         }
     }
 
-    private LinkedList<Boid> copyBoids(){
+    private LinkedList<Boid> copyBoids() {
         LinkedList<Boid> boids = new LinkedList<>();
-        for (Ally ally : allies){
+        for (Ally ally : allies) {
             boids.add(ally.clone());
         }
-        for (Predator predator : predators){
+        for (Predator predator : predators) {
             boids.add(predator.clone());
         }
         return boids;
