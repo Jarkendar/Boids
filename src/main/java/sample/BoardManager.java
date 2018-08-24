@@ -1,9 +1,6 @@
 package sample;
 
-import java.util.LinkedList;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Random;
+import java.util.*;
 
 import static java.lang.Math.*;
 
@@ -12,7 +9,7 @@ public class BoardManager extends Observable implements Runnable {
     private static final double CHANGE_VELOCITY_BESIDE_WALL = 0.5;
     private static final double ACCELERATE = 0.1;
     private static final double MINIMAL_DISTANCE_TO_WALL = 20;
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
     private LinkedList<Observer> observers = new LinkedList<>();
     private double boardWidth;
     private double boardHeight;
@@ -41,6 +38,7 @@ public class BoardManager extends Observable implements Runnable {
         startVelocity[1] = maxVelocity / 2.0;
         createPredators(predatorNumber);
         createAllies(allyNumber);
+        System.out.println(toString());
     }
 
     public BoardManager(double boardWidth, double boardHeight, int predatorNumber, int allyNumber, double neighbourhoodRadius, double viewingAngle, double minimalDistance, double maxVelocity, double weightOfSpeed, double weightOfDistance, double weightOfDisturbances, double weightOfMinimalDistance) {
@@ -58,17 +56,18 @@ public class BoardManager extends Observable implements Runnable {
         this.weightOfMinimalDistance = weightOfMinimalDistance;
         createPredators(predatorNumber);
         createAllies(allyNumber);
+        System.out.println(toString());
     }
 
     private void createPredators(int count) {
         for (int i = 0; i < count; ++i) {
-            predators.addLast(new Predator(randPosition(System.currentTimeMillis()), startVelocity));
+            predators.addLast(new Predator(randPosition(System.currentTimeMillis()), randVelocity(System.currentTimeMillis())));
         }
     }
 
     private void createAllies(int count) {
         for (int i = 0; i < count; ++i) {
-            allies.addLast(new Ally(randPosition(System.currentTimeMillis()), startVelocity));
+            allies.addLast(new Ally(randPosition(System.currentTimeMillis()), randVelocity(System.currentTimeMillis())));
         }
     }
 
@@ -80,6 +79,14 @@ public class BoardManager extends Observable implements Runnable {
             position[1] = random.nextDouble() * boardHeight;
         } while (!isAvailableBoidsPositions(position));
         return position;
+    }
+
+    private double[] randVelocity(long seed){
+        Random random = new Random(seed);
+        double[] velocity = new double[2];
+        velocity[0] = random.nextDouble()*maxVelocity*(random.nextBoolean() ? 1 : -1);
+        velocity[1] = random.nextDouble()*maxVelocity*(random.nextBoolean() ? 1 : -1);
+        return velocity;
     }
 
     private boolean isAvailableBoidsPositions(double[] position) {
@@ -140,8 +147,8 @@ public class BoardManager extends Observable implements Runnable {
     }
 
     private void tryAccelerate(Boid boid){
-        double newVX = boid.getVelocity()[0] + (random.nextDouble()-0.5)*0.2;
-        double newVY = boid.getVelocity()[1] + (random.nextDouble()-0.5)*0.2;
+        double newVX = boid.getVelocity()[0] + (RANDOM.nextDouble()*maxVelocity)*weightOfDisturbances*(RANDOM.nextBoolean() ? 1 : -1);
+        double newVY = boid.getVelocity()[1] + (RANDOM.nextDouble()*maxVelocity)*weightOfDisturbances*(RANDOM.nextBoolean() ? 1 : -1);
         newVX = abs(newVX) > maxVelocity ? newVX*0.75 : newVX;
         newVY = abs(newVY) > maxVelocity ? newVY*0.75 : newVY;
         boid.setVelocity(new double[]{newVX, newVY});
@@ -294,6 +301,26 @@ public class BoardManager extends Observable implements Runnable {
             boids.add(predator.clone());
         }
         return boids;
+    }
+
+    @Override
+    public String toString() {
+        return "BoardManager{" +
+                "observers=" + observers +
+                ", boardWidth=" + boardWidth +
+                ", boardHeight=" + boardHeight +
+                ", predators=" + predators +
+                ", allies=" + allies +
+                ", neighbourhoodRadius=" + neighbourhoodRadius +
+                ", viewingAngle=" + viewingAngle +
+                ", minimalDistance=" + minimalDistance +
+                ", maxVelocity=" + maxVelocity +
+                ", startVelocity=" + Arrays.toString(startVelocity) +
+                ", weightOfSpeed=" + weightOfSpeed +
+                ", weightOfDistance=" + weightOfDistance +
+                ", weightOfDisturbances=" + weightOfDisturbances +
+                ", weightOfMinimalDistance=" + weightOfMinimalDistance +
+                "} " + super.toString();
     }
 
     @Override

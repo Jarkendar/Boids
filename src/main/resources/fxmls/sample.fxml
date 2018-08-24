@@ -20,13 +20,13 @@
                 </Label>
                 <Label layoutX="550.0" layoutY="90.0" text="Allies count"/>
                 <TextField fx:id="allyCountField" layoutX="710.0" layoutY="85.0" maxWidth="76.0" promptText="1-100"
-                           text="3"/>
+                           text="20"/>
                 <Label layoutX="550.0" layoutY="118.0" text="Predators count"/>
                 <TextField fx:id="predatorCountField" layoutX="710.0" layoutY="113.0" maxWidth="76.0" promptText="0-10"
-                           text="1"/>
+                           text="0"/>
                 <Label layoutX="550.0" layoutY="146.0" text="Neighborhood radius"/>
                 <TextField fx:id="neighborhoodRadiusField" layoutX="710.0" layoutY="141.0" maxWidth="76.0"
-                           promptText="px" text="200"/>
+                           promptText="px" text="50"/>
                 <Label layoutX="550.0" layoutY="174.0" text="Viewing angle"/>
                 <TextField fx:id="viewingAngleField" layoutX="710.0" layoutY="169.0" maxWidth="76.0" promptText="°"
                            text="120"/>

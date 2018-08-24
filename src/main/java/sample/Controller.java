@@ -14,8 +14,8 @@ import java.util.Observer;
 public class Controller implements Observer {
 
     private static final int NUMBER_OF_POINTS_ON_SHIELD = 360;
-    private static final int[] CENTER = {25, 25};
-    private static final int RADIUS = 25;
+    private static final int RADIUS = 10;
+    private static final int[] CENTER = {RADIUS, RADIUS};
     private int[][] shieldOfPositions;
 
     public Canvas canvas;
@@ -201,9 +201,7 @@ public class Controller implements Observer {
     }
 
     private void drawBoids(GraphicsContext graphicsContext, LinkedList<Boid> boids) {
-        System.out.println("Tour "+canvas.getWidth() + " " + canvas.getHeight());
         for (Boid boid : boids){
-            System.out.println(boid);
             drawBoid(graphicsContext, boid);
         }
     }
@@ -251,7 +249,11 @@ public class Controller implements Observer {
         boardManager = new BoardManager(canvas.getWidth(), canvas.getHeight(),
                 Integer.parseInt(predatorCountField.getText()), Integer.parseInt(allyCountField.getText()),
                 Integer.parseInt(neighborhoodRadiusField.getText()), Integer.parseInt(viewingAngleField.getText()),
-                Integer.parseInt(minimalDistanceField.getText()), Integer.parseInt(maxVelocityField.getText()));
+                Integer.parseInt(minimalDistanceField.getText()), Integer.parseInt(maxVelocityField.getText()),
+                Double.parseDouble(weighOfSpeedField.getText())/100,
+                Double.parseDouble(weighOfDistanceField.getText())/100,
+                Double.parseDouble(weightOfDisturbancesField.getText())/100,
+                Double.parseDouble(weightOfMinDistanceField.getText())/100);
         boardManager.addObserver(this);
         Thread thread = new Thread(boardManager);
         thread.setDaemon(true);
