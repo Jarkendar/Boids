@@ -116,7 +116,7 @@ public class BoardManager extends Observable implements Runnable {
                         thirdBoidsRule(ally, neighbourhood);
                     }
                 } else {
-
+                    runAwayFromPredators(ally, closePredators);
                 }
                 boidBesideWall(ally);
                 move(ally);
@@ -232,6 +232,40 @@ public class BoardManager extends Observable implements Runnable {
         return angle < 0 ? angle + 360 : angle;
     }
 
+    private void runAwayFromPredators(Ally ally, LinkedList<Predator> closePredators){
+        double angle = 0.0;
+        for (Predator predator : closePredators){
+            angle += calcAngle(ally.getPosition()[1]-predator.getPosition()[1], ally.getPosition()[0]-predator.getPosition()[0]);
+        }
+        angle += 180.0;
+        while (angle >= 360.0){
+            angle -= 360.0;
+        }
+        double velocityRatio = (angle != 90.0 && angle != 270.0) ? abs(ally.getVelocity()[0])/(abs(ally.getVelocity()[0])+abs(ally.getVelocity()[1])) : 0.0;
+        double newVX = ally.getVelocity()[0];
+        double newVY = ally.getVelocity()[1];
+        if (angle == 90.0){
+            newVX = abs(newVX) * 2.0;
+            newVY /= 2.0;
+        }else if (angle == 270.0){
+            newVX = -abs(newVX) * 2.0;
+            newVY /= 2.0;
+        }else if (angle < 90.0){
+            newVX = abs(newVX) * 2.0 * velocityRatio;
+            newVY = abs(newVY) * 2.0 * velocityRatio;
+        }else if (angle < 180.0){
+            newVX = -abs(newVX) * 2.0 * velocityRatio;
+            newVY = abs(newVY) * 2.0 * velocityRatio;
+        }else if (angle < 270.0){
+            newVX = -abs(newVX) * 2.0 * velocityRatio;
+            newVY = -abs(newVY) * 2.0 * velocityRatio;
+        }else if (angle < 360.0){
+            newVX = abs(newVX) * 2.0 * velocityRatio;
+            newVY = -abs(newVY) * 2.0 * velocityRatio;
+        }
+        ally.setVelocity(new double[] { newVX, newVY});
+    }
+
     /**
      * First boids rule. Boid adjust speed to neighbour boids.
      *
@@ -280,12 +314,12 @@ public class BoardManager extends Observable implements Runnable {
      * @param neighbours - boids in neighbourhoods
      */
     private void thirdBoidsRule(Ally boid, LinkedList<Ally> neighbours){
-        for (int i = 0; i<neighbours.size(); ++i){
-            double distance = sqrt(pow(neighbours.get(i).getPosition()[0] - boid.getPosition()[0], 2) + pow(neighbours.get(i).getPosition()[1] - boid.getPosition()[1], 2));
-            if (distance < minimalDistance){
-                double additionX = weightOfMinimalDistance * ((((neighbours.get(i).getPosition()[0]-boid.getPosition()[0])*minimalDistance)/distance)-(neighbours.get(i).getPosition()[0]-boid.getPosition()[0]));
-                double additionY = weightOfMinimalDistance * ((((neighbours.get(i).getPosition()[1]-boid.getPosition()[1])*minimalDistance)/distance)-(neighbours.get(i).getPosition()[1]-boid.getPosition()[1]));
-                boid.setVelocity(new double[]{boid.getVelocity()[0]-additionX, boid.getVelocity()[1]-additionY});
+        for (Ally neighbour : neighbours) {
+            double distance = sqrt(pow(neighbour.getPosition()[0] - boid.getPosition()[0], 2) + pow(neighbour.getPosition()[1] - boid.getPosition()[1], 2));
+            if (distance < minimalDistance) {
+                double additionX = weightOfMinimalDistance * ((((neighbour.getPosition()[0] - boid.getPosition()[0]) * minimalDistance) / distance) - (neighbour.getPosition()[0] - boid.getPosition()[0]));
+                double additionY = weightOfMinimalDistance * ((((neighbour.getPosition()[1] - boid.getPosition()[1]) * minimalDistance) / distance) - (neighbour.getPosition()[1] - boid.getPosition()[1]));
+                boid.setVelocity(new double[]{boid.getVelocity()[0] - additionX, boid.getVelocity()[1] - additionY});
             }
         }
     }
