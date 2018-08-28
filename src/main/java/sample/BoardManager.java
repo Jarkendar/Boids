@@ -18,6 +18,7 @@ public class BoardManager extends Observable implements Runnable {
 
     private LinkedList<Predator> predators = new LinkedList<>();
     private LinkedList<Ally> allies = new LinkedList<>();
+    private LinkedList<Food> foods = new LinkedList<>();
     private double neighbourhoodRadius = 0;
     private double viewingAngle = 0;
     private double minimalDistance = 0;
@@ -130,7 +131,7 @@ public class BoardManager extends Observable implements Runnable {
                 tryAccelerate(predator);
             }
 
-            notifyObservers(copyBoids());
+            notifyObservers(new Object[]{copyBoids(),getFoods()});
             try {
                 synchronized (this) {
                     wait(42);
@@ -326,6 +327,14 @@ public class BoardManager extends Observable implements Runnable {
                 boid.setVelocity(new double[]{boid.getVelocity()[0] - additionX, boid.getVelocity()[1] - additionY});
             }
         }
+    }
+
+    public synchronized void addFood(double[] position){
+        foods.addLast(new Food(position));
+    }
+
+    private synchronized LinkedList<Food> getFoods(){
+        return this.foods;
     }
 
     public LinkedList<Predator> getPredators() {

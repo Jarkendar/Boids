@@ -156,6 +156,11 @@ public class Controller implements Observer {
                 updateButton.setDisable(!canPressUpdate());
             }
         });
+        canvas.setOnMouseClicked(event -> {
+            if (boardManager != null){
+                boardManager.addFood(new double[]{event.getX(),event.getY()});
+            }
+        });
         shieldOfPositions = generatePositionsOnCircle(NUMBER_OF_POINTS_ON_SHIELD, CENTER, RADIUS);
     }
 
@@ -190,7 +195,7 @@ public class Controller implements Observer {
     }
 
 
-    private void refreshCanvas(LinkedList<Boid> boids) {
+    private void refreshCanvas(LinkedList<Boid> boids, LinkedList<Food> foods) {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         clearCanvas(graphicsContext);
         drawBoids(graphicsContext, boids);
@@ -239,7 +244,8 @@ public class Controller implements Observer {
 
     @Override
     public void update(Observable observable, Object arg) {
-        refreshCanvas(((LinkedList<Boid>)arg));
+        Object[] objects = (Object[]) arg;
+        refreshCanvas(((LinkedList<Boid>)objects[0]), (LinkedList<Food>)objects[1]);
     }
 
     public void startSimulation(ActionEvent actionEvent) {
