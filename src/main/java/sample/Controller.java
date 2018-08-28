@@ -157,8 +157,8 @@ public class Controller implements Observer {
             }
         });
         canvas.setOnMouseClicked(event -> {
-            if (boardManager != null){
-                boardManager.addFood(new double[]{event.getX(),event.getY()});
+            if (boardManager != null) {
+                boardManager.addFood(new double[]{event.getX(), event.getY()});
             }
         });
         shieldOfPositions = generatePositionsOnCircle(NUMBER_OF_POINTS_ON_SHIELD, CENTER, RADIUS);
@@ -199,6 +199,7 @@ public class Controller implements Observer {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         clearCanvas(graphicsContext);
         drawBoids(graphicsContext, boids);
+        drawFoods(graphicsContext, foods);
     }
 
     private void clearCanvas(GraphicsContext graphicsContext) {
@@ -206,7 +207,7 @@ public class Controller implements Observer {
     }
 
     private void drawBoids(GraphicsContext graphicsContext, LinkedList<Boid> boids) {
-        for (Boid boid : boids){
+        for (Boid boid : boids) {
             drawBoid(graphicsContext, boid);
         }
     }
@@ -242,14 +243,29 @@ public class Controller implements Observer {
         graphicsContext.fillPolygon(posX, posY, 3);
     }
 
+    private void drawFoods(GraphicsContext graphicsContext, LinkedList<Food> foods) {
+        for (Food food : foods) {
+            drawFood(graphicsContext, food);
+        }
+    }
+
+    private void drawFood(GraphicsContext graphicsContext, Food food) {
+        double correctPosX = -CENTER[0] + food.getPosition()[0];
+        double correctPosY = -CENTER[1] + food.getPosition()[1];
+        double[] posX = new double[]{shieldOfPositions[0][0] + correctPosX, shieldOfPositions[90][0] + correctPosX, shieldOfPositions[180][0] + correctPosX, shieldOfPositions[270][0] + correctPosX};
+        double[] posY = new double[]{shieldOfPositions[0][1] + correctPosY, shieldOfPositions[90][1] + correctPosY, shieldOfPositions[180][1] + correctPosY, shieldOfPositions[270][1] + correctPosY};
+        graphicsContext.setFill(Color.BLUE);
+        graphicsContext.fillPolygon(posX, posY, 4);
+    }
+
     @Override
     public void update(Observable observable, Object arg) {
         Object[] objects = (Object[]) arg;
-        refreshCanvas(((LinkedList<Boid>)objects[0]), (LinkedList<Food>)objects[1]);
+        refreshCanvas(((LinkedList<Boid>) objects[0]), (LinkedList<Food>) objects[1]);
     }
 
     public void startSimulation(ActionEvent actionEvent) {
-        if (boardManager != null){
+        if (boardManager != null) {
             boardManager.endThreadWork();
             boardManager.deleteObservers();
         }
@@ -257,10 +273,10 @@ public class Controller implements Observer {
                 Integer.parseInt(predatorCountField.getText()), Integer.parseInt(allyCountField.getText()),
                 Integer.parseInt(neighborhoodRadiusField.getText()), Integer.parseInt(viewingAngleField.getText()),
                 Integer.parseInt(minimalDistanceField.getText()), Integer.parseInt(maxVelocityField.getText()),
-                Double.parseDouble(weighOfSpeedField.getText())/100,
-                Double.parseDouble(weighOfDistanceField.getText())/100,
-                Double.parseDouble(weightOfDisturbancesField.getText())/100,
-                Double.parseDouble(weightOfMinDistanceField.getText())/100);
+                Double.parseDouble(weighOfSpeedField.getText()) / 100,
+                Double.parseDouble(weighOfDistanceField.getText()) / 100,
+                Double.parseDouble(weightOfDisturbancesField.getText()) / 100,
+                Double.parseDouble(weightOfMinDistanceField.getText()) / 100);
         boardManager.addObserver(this);
         Thread thread = new Thread(boardManager);
         thread.setDaemon(true);
