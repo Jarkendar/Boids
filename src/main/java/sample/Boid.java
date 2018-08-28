@@ -2,22 +2,13 @@ package sample;
 
 import java.util.Arrays;
 
-public abstract class Boid {
+public abstract class Boid extends Thing{
 
-    private double[] position;// 0->X; 1->Y
     private double[] velocity;// 0->VX; 1->VY
 
     public Boid(double[] position, double[] velocity) {
-        this.position = position;
+        super(position);
         this.velocity = velocity;
-    }
-
-    public double[] getPosition() {
-        return position;
-    }
-
-    public void setPosition(double[] position) {
-        this.position = position;
     }
 
     public double[] getVelocity() {
@@ -31,7 +22,7 @@ public abstract class Boid {
     @Override
     public String toString() {
         return "Boid{" +
-                "position=" + Arrays.toString(position) +
+                "position=" + Arrays.toString(super.getPosition()) +
                 ", velocity=" + Arrays.toString(velocity) +
                 '}';
     }

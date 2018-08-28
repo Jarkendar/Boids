@@ -1,13 +1,13 @@
 package sample;
 
-public class Food {
-    private double[] position;// 0->X; 1->Y
+public class Food extends Thing {
 
     public Food(double[] position) {
-        this.position = position;
+        super(position);
     }
 
-    public double[] getPosition() {
-        return position;
+    @Override
+    public String toString() {
+        return "Food{} " + super.toString();
     }
 }
