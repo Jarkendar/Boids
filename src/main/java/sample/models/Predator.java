@@ -1,4 +1,4 @@
-package sample;
+package sample.models;
 
 public class Predator extends Boid {
     public Predator(double[] position, double[] velocity) {

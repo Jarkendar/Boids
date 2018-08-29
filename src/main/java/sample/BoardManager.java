@@ -1,5 +1,10 @@
 package sample;
 
+import sample.models.Ally;
+import sample.models.Boid;
+import sample.models.Food;
+import sample.models.Predator;
+
 import java.util.*;
 
 import static java.lang.Math.*;

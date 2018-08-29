@@ -1,4 +1,4 @@
-package sample;
+package sample.models;
 
 public class Ally extends Boid {
     public Ally(double[] position, double[] velocity) {

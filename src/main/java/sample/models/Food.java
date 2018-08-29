@@ -1,4 +1,4 @@
-package sample;
+package sample.models;
 
 public class Food extends Thing {
 

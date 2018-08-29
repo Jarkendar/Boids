@@ -6,6 +6,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import sample.models.Ally;
+import sample.models.Boid;
+import sample.models.Food;
+import sample.models.Predator;
 
 import java.util.LinkedList;
 import java.util.Observable;
