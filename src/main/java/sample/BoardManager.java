@@ -119,7 +119,7 @@ public class BoardManager extends Observable implements Runnable {
                         thirdBoidsRule(ally, neighbourhood);
                     }
                 } else {
-                    runAwayFromPredators(ally, closePredators);
+                    boidsRuleAboutPredators(ally, closePredators);
                 }
                 boidBesideWall(ally);
                 move(ally);
@@ -131,7 +131,7 @@ public class BoardManager extends Observable implements Runnable {
                 tryAccelerate(predator);
             }
 
-            notifyObservers(new Object[]{copyBoids(),getFoods()});
+            notifyObservers(new Object[]{copyBoids(), getFoods()});
             try {
                 synchronized (this) {
                     wait(42);
@@ -235,7 +235,13 @@ public class BoardManager extends Observable implements Runnable {
         return angle < 0 ? angle + 360 : angle;
     }
 
-    private void runAwayFromPredators(Ally ally, LinkedList<Predator> closePredators) {
+    /**
+     * Fourth boid rule. If boid notice predators, try run away from their.
+     *
+     * @param ally           - center boid
+     * @param closePredators - list of predators in neighbourhood
+     */
+    private void boidsRuleAboutPredators(Ally ally, LinkedList<Predator> closePredators) {
         double angle = 0.0;
         for (Predator predator : closePredators) {
             angle += calcAngle(ally.getPosition()[1] - predator.getPosition()[1], ally.getPosition()[0] - predator.getPosition()[0]);
@@ -329,11 +335,11 @@ public class BoardManager extends Observable implements Runnable {
         }
     }
 
-    public synchronized void addFood(double[] position){
+    public synchronized void addFood(double[] position) {
         foods.addLast(new Food(position));
     }
 
-    private synchronized LinkedList<Food> getFoods(){
+    private synchronized LinkedList<Food> getFoods() {
         return this.foods;
     }
 
