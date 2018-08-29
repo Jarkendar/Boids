@@ -7,7 +7,6 @@ import static java.lang.Math.*;
 public class BoardManager extends Observable implements Runnable {
 
     private static final double CHANGE_VELOCITY_BESIDE_WALL = 0.5;
-    private static final double ACCELERATE = 0.1;
     private static final double MINIMAL_DISTANCE_TO_WALL = 20;
     private static final Random RANDOM = new Random();
     private LinkedList<Observer> observers = new LinkedList<>();
@@ -112,11 +111,15 @@ public class BoardManager extends Observable implements Runnable {
             for (Ally ally : allies) {
                 LinkedList<Predator> closePredators = getClosePredators(ally);
                 if (closePredators == null) {
-                    LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
-                    if (!neighbourhood.isEmpty()) {
-                        firstBoidsRule(ally, neighbourhood);
-                        secondBoidsRule(ally, neighbourhood);
-                        thirdBoidsRule(ally, neighbourhood);
+                    if (foods.isEmpty()) {
+                        LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
+                        if (!neighbourhood.isEmpty()) {
+                            firstBoidsRule(ally, neighbourhood);
+                            secondBoidsRule(ally, neighbourhood);
+                            thirdBoidsRule(ally, neighbourhood);
+                        }
+                    } else {
+                        Food nearestFood = findTheNearestFood(ally);
                     }
                 } else {
                     boidsRuleAboutPredators(ally, closePredators);
@@ -235,45 +238,23 @@ public class BoardManager extends Observable implements Runnable {
         return angle < 0 ? angle + 360 : angle;
     }
 
-    /**
-     * Fourth boid rule. If boid notice predators, try run away from their.
-     *
-     * @param ally           - center boid
-     * @param closePredators - list of predators in neighbourhood
-     */
-    private void boidsRuleAboutPredators(Ally ally, LinkedList<Predator> closePredators) {
-        double angle = 0.0;
-        for (Predator predator : closePredators) {
-            angle += calcAngle(ally.getPosition()[1] - predator.getPosition()[1], ally.getPosition()[0] - predator.getPosition()[0]);
+    private Food findTheNearestFood(Ally boid){
+        if (getFoods().size() == 1){
+            return getFoods().get(0);
+        }else{
+            double minDistance = Double.MAX_VALUE;
+            int minIndex = 0;
+            int iterator = 0;
+            for (Food food : getFoods()){
+                double distance = sqrt(pow(food.getPosition()[0] - boid.getPosition()[0], 2) + pow(food.getPosition()[1] - boid.getPosition()[1], 2));
+                if (minDistance > distance){
+                    minDistance = distance;
+                    minIndex = iterator;
+                }
+                ++iterator;
+            }
+            return getFoods().get(minIndex);
         }
-        while (angle >= 360.0) {
-            angle -= 360.0;
-        }
-        double velocityRatio = (angle != 90.0 && angle != 270.0) ? abs(ally.getVelocity()[0]) / (abs(ally.getVelocity()[0]) + abs(ally.getVelocity()[1])) : 0.5;
-        double newVX = ally.getVelocity()[0];
-        double newVY = ally.getVelocity()[1];
-        double multiplierX = 2.0 * velocityRatio;
-        double multiplierY = 2.0 * (1.0 - velocityRatio);
-        if (angle == 90.0) {
-            newVX = abs(newVX) * 2.0;
-            newVY /= 2.0;
-        } else if (angle == 270.0) {
-            newVX = -abs(newVX) * 2.0;
-            newVY /= 2.0;
-        } else if (angle < 90.0) {
-            newVX = abs(newVX) * multiplierX;
-            newVY = abs(newVY) * multiplierY;
-        } else if (angle < 180.0) {
-            newVX = -abs(newVX) * multiplierX;
-            newVY = abs(newVY) * multiplierY;
-        } else if (angle < 270.0) {
-            newVX = -abs(newVX) * multiplierX;
-            newVY = -abs(newVY) * multiplierY;
-        } else if (angle < 360.0) {
-            newVX = abs(newVX) * multiplierX;
-            newVY = -abs(newVY) * multiplierY;
-        }
-        ally.setVelocity(new double[]{newVX, newVY});
     }
 
     /**
@@ -334,6 +315,48 @@ public class BoardManager extends Observable implements Runnable {
             }
         }
     }
+
+    /**
+     * Fourth boid rule. If boid notice predators, try run away from their.
+     *
+     * @param ally           - center boid
+     * @param closePredators - list of predators in neighbourhood
+     */
+    private void boidsRuleAboutPredators(Ally ally, LinkedList<Predator> closePredators) {
+        double angle = 0.0;
+        for (Predator predator : closePredators) {
+            angle += calcAngle(ally.getPosition()[1] - predator.getPosition()[1], ally.getPosition()[0] - predator.getPosition()[0]);
+        }
+        while (angle >= 360.0) {
+            angle -= 360.0;
+        }
+        double velocityRatio = (angle != 90.0 && angle != 270.0) ? abs(ally.getVelocity()[0]) / (abs(ally.getVelocity()[0]) + abs(ally.getVelocity()[1])) : 0.5;
+        double newVX = ally.getVelocity()[0];
+        double newVY = ally.getVelocity()[1];
+        double multiplierX = 2.0 * velocityRatio;
+        double multiplierY = 2.0 * (1.0 - velocityRatio);
+        if (angle == 90.0) {
+            newVX = abs(newVX) * 2.0;
+            newVY /= 2.0;
+        } else if (angle == 270.0) {
+            newVX = -abs(newVX) * 2.0;
+            newVY /= 2.0;
+        } else if (angle < 90.0) {
+            newVX = abs(newVX) * multiplierX;
+            newVY = abs(newVY) * multiplierY;
+        } else if (angle < 180.0) {
+            newVX = -abs(newVX) * multiplierX;
+            newVY = abs(newVY) * multiplierY;
+        } else if (angle < 270.0) {
+            newVX = -abs(newVX) * multiplierX;
+            newVY = -abs(newVY) * multiplierY;
+        } else if (angle < 360.0) {
+            newVX = abs(newVX) * multiplierX;
+            newVY = -abs(newVY) * multiplierY;
+        }
+        ally.setVelocity(new double[]{newVX, newVY});
+    }
+
 
     public synchronized void addFood(double[] position) {
         foods.addLast(new Food(position));
