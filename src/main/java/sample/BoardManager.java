@@ -28,6 +28,7 @@ public class BoardManager extends Observable implements Runnable {
     private double minimalDistance = 0;
     private double maxVelocity = 0;
     private double[] startVelocity = {0, 0};
+    private double distanceToEat = 0;
 
     private double weightOfSpeed = 1.0;
     private double weightOfDistance = 1.0;
@@ -43,6 +44,7 @@ public class BoardManager extends Observable implements Runnable {
         this.maxVelocity = maxVelocity;
         startVelocity[0] = -maxVelocity / 2.0;
         startVelocity[1] = maxVelocity / 2.0;
+        distanceToEat = minimalDistance / 4;
         createPredators(predatorNumber);
         createAllies(allyNumber);
         System.out.println(toString());
@@ -61,6 +63,7 @@ public class BoardManager extends Observable implements Runnable {
         this.weightOfDistance = weightOfDistance;
         this.weightOfDisturbances = weightOfDisturbances;
         this.weightOfMinimalDistance = weightOfMinimalDistance;
+        distanceToEat = minimalDistance / 4;
         createPredators(predatorNumber);
         createAllies(allyNumber);
         System.out.println(toString());
@@ -116,7 +119,7 @@ public class BoardManager extends Observable implements Runnable {
             for (Ally ally : allies) {
                 LinkedList<Predator> closePredators = getClosePredators(ally);
                 if (closePredators == null) {
-                    if (foods.isEmpty()) {
+                    if (getFoods().isEmpty()) {
                         LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
                         if (!neighbourhood.isEmpty()) {
                             firstBoidsRule(ally, neighbourhood);
@@ -125,6 +128,7 @@ public class BoardManager extends Observable implements Runnable {
                         }
                     } else {
                         Food nearestFood = findTheNearestFood(ally);
+                        boidsRuleAboutFood(ally, nearestFood);
                     }
                 } else {
                     boidsRuleAboutPredators(ally, closePredators);
@@ -132,6 +136,9 @@ public class BoardManager extends Observable implements Runnable {
                 boidBesideWall(ally);
                 move(ally);
                 tryAccelerate(ally);
+                if (!getFoods().isEmpty()) {
+                    tryConsumeFood(ally);
+                }
             }
             for (Predator predator : predators) {
                 boidBesideWall(predator);
@@ -243,22 +250,31 @@ public class BoardManager extends Observable implements Runnable {
         return angle < 0 ? angle + 360 : angle;
     }
 
-    private Food findTheNearestFood(Ally boid){
-        if (getFoods().size() == 1){
+    private Food findTheNearestFood(Ally boid) {
+        if (getFoods().size() == 1) {
             return getFoods().get(0);
-        }else{
+        } else {
             double minDistance = Double.MAX_VALUE;
             int minIndex = 0;
             int iterator = 0;
-            for (Food food : getFoods()){
+            for (Food food : getFoods()) {
                 double distance = sqrt(pow(food.getPosition()[0] - boid.getPosition()[0], 2) + pow(food.getPosition()[1] - boid.getPosition()[1], 2));
-                if (minDistance > distance){
+                if (minDistance > distance) {
                     minDistance = distance;
                     minIndex = iterator;
                 }
                 ++iterator;
             }
             return getFoods().get(minIndex);
+        }
+    }
+
+    private void tryConsumeFood(Ally ally) {
+        for (Food food : getFoods()) {
+            if (abs(ally.getPosition()[0] - food.getPosition()[0]) < distanceToEat && abs(ally.getPosition()[1] - food.getPosition()[1]) < distanceToEat) {
+                getFoods().remove(food);
+                break;
+            }
         }
     }
 
@@ -322,7 +338,7 @@ public class BoardManager extends Observable implements Runnable {
     }
 
     /**
-     * Fourth boid rule. If boid notice predators, try run away from their.
+     * Fourth boids rule. If boid notice predators, try run away from their.
      *
      * @param ally           - center boid
      * @param closePredators - list of predators in neighbourhood
@@ -359,6 +375,22 @@ public class BoardManager extends Observable implements Runnable {
             newVX = abs(newVX) * multiplierX;
             newVY = -abs(newVY) * multiplierY;
         }
+        ally.setVelocity(new double[]{newVX, newVY});
+    }
+
+    /**
+     * Fifth boids rule. Every boid want to eat food. Boids are impatient, because they move to nearest food.
+     *
+     * @param ally - center boid
+     * @param food - foor
+     */
+    private void boidsRuleAboutFood(Ally ally, Food food) {
+        double angle = calcAngle(ally.getPosition()[1] - food.getPosition()[1], ally.getPosition()[0] - food.getPosition()[0]) + 180.0;
+        if (angle >= 360.0) {
+            angle -= 360.0;
+        }
+        double newVX = cos(toRadians(angle)) * maxVelocity;
+        double newVY = sin(toRadians(angle)) * maxVelocity;
         ally.setVelocity(new double[]{newVX, newVY});
     }
 
