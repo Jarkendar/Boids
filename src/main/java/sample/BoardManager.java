@@ -11,7 +11,6 @@ import static java.lang.Math.*;
 
 public class BoardManager extends Observable implements Runnable {
 
-    private static final double CHANGE_VELOCITY_BESIDE_WALL = 0.5;
     private static final double MINIMAL_DISTANCE_TO_WALL = 20;
     private static final Random RANDOM = new Random();
     private LinkedList<Observer> observers = new LinkedList<>();
@@ -29,6 +28,7 @@ public class BoardManager extends Observable implements Runnable {
     private double maxVelocity = 0;
     private double[] startVelocity = {0, 0};
     private double distanceToEat = 0;
+    private double changeVelocityBesideWall = 0.5;
 
     private double weightOfSpeed = 1.0;
     private double weightOfDistance = 1.0;
@@ -45,6 +45,7 @@ public class BoardManager extends Observable implements Runnable {
         startVelocity[0] = -maxVelocity / 2.0;
         startVelocity[1] = maxVelocity / 2.0;
         distanceToEat = minimalDistance / 4;
+        changeVelocityBesideWall = maxVelocity / 8.0;
         createPredators(predatorNumber);
         createAllies(allyNumber);
         System.out.println(toString());
@@ -64,6 +65,7 @@ public class BoardManager extends Observable implements Runnable {
         this.weightOfDisturbances = weightOfDisturbances;
         this.weightOfMinimalDistance = weightOfMinimalDistance;
         distanceToEat = minimalDistance / 4;
+        changeVelocityBesideWall = maxVelocity / 8.0;
         createPredators(predatorNumber);
         createAllies(allyNumber);
         System.out.println(toString());
@@ -184,14 +186,14 @@ public class BoardManager extends Observable implements Runnable {
 
     private void boidBesideWall(Boid boid) {
         if (boid.getPosition()[0] < 0 + MINIMAL_DISTANCE_TO_WALL) {
-            boid.setVelocity(new double[]{boid.getVelocity()[0] + CHANGE_VELOCITY_BESIDE_WALL, boid.getVelocity()[1]});
+            boid.setVelocity(new double[]{boid.getVelocity()[0] + changeVelocityBesideWall, boid.getVelocity()[1]});
         } else if (boid.getPosition()[0] > boardWidth - MINIMAL_DISTANCE_TO_WALL) {
-            boid.setVelocity(new double[]{boid.getVelocity()[0] - CHANGE_VELOCITY_BESIDE_WALL, boid.getVelocity()[1]});
+            boid.setVelocity(new double[]{boid.getVelocity()[0] - changeVelocityBesideWall, boid.getVelocity()[1]});
         }
         if (boid.getPosition()[1] < 0 + MINIMAL_DISTANCE_TO_WALL) {
-            boid.setVelocity(new double[]{boid.getVelocity()[0], boid.getVelocity()[1] + CHANGE_VELOCITY_BESIDE_WALL});
+            boid.setVelocity(new double[]{boid.getVelocity()[0], boid.getVelocity()[1] + changeVelocityBesideWall});
         } else if (boid.getPosition()[1] > boardHeight - MINIMAL_DISTANCE_TO_WALL) {
-            boid.setVelocity(new double[]{boid.getVelocity()[0], boid.getVelocity()[1] - CHANGE_VELOCITY_BESIDE_WALL});
+            boid.setVelocity(new double[]{boid.getVelocity()[0], boid.getVelocity()[1] - changeVelocityBesideWall});
         }
     }
 
