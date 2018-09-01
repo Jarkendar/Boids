@@ -240,7 +240,7 @@ public class Controller implements Observer {
         double[] posX = new double[]{shieldOfPositions[angleLeft][0] + correctPosX, shieldOfPositions[anglePeak][0] + correctPosX, shieldOfPositions[angleRight][0] + correctPosX};
         double[] posY = new double[]{shieldOfPositions[angleLeft][1] + correctPosY, shieldOfPositions[anglePeak][1] + correctPosY, shieldOfPositions[angleRight][1] + correctPosY};
         if (boid instanceof Ally) {
-            graphicsContext.setFill(Color.GREEN);
+            graphicsContext.setFill(Color.YELLOWGREEN);
         } else if (boid instanceof Predator) {
             graphicsContext.setFill(Color.RED);
         }
