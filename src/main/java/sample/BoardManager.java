@@ -117,44 +117,46 @@ public class BoardManager extends Observable implements Runnable {
 
     @Override
     public void run() {
-        while (canWork) {
-            for (Ally ally : allies) {
-                LinkedList<Predator> closePredators = getClosePredators(ally);
-                if (closePredators == null) {
-                    if (getFoods().isEmpty()) {
-                        LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
-                        if (!neighbourhood.isEmpty()) {
-                            firstBoidsRule(ally, neighbourhood);
-                            secondBoidsRule(ally, neighbourhood);
-                            thirdBoidsRule(ally, neighbourhood);
+        synchronized (this) {
+            while (canWork) {
+                for (Ally ally : allies) {
+                    LinkedList<Predator> closePredators = getClosePredators(ally);
+                    if (closePredators == null) {
+                        if (getFoods().isEmpty()) {
+                            LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
+                            if (!neighbourhood.isEmpty()) {
+                                firstBoidsRule(ally, neighbourhood);
+                                secondBoidsRule(ally, neighbourhood);
+                                thirdBoidsRule(ally, neighbourhood);
+                            }
+                        } else {
+                            Food nearestFood = findTheNearestFood(ally);
+                            boidsRuleAboutFood(ally, nearestFood);
                         }
                     } else {
-                        Food nearestFood = findTheNearestFood(ally);
-                        boidsRuleAboutFood(ally, nearestFood);
+                        boidsRuleAboutPredators(ally, closePredators);
                     }
-                } else {
-                    boidsRuleAboutPredators(ally, closePredators);
+                    boidBesideWall(ally);
+                    move(ally);
+                    tryAccelerate(ally);
+                    if (!getFoods().isEmpty()) {
+                        tryConsumeFood(ally);
+                    }
                 }
-                boidBesideWall(ally);
-                move(ally);
-                tryAccelerate(ally);
-                if (!getFoods().isEmpty()) {
-                    tryConsumeFood(ally);
+                for (Predator predator : predators) {
+                    boidBesideWall(predator);
+                    move(predator);
+                    tryAccelerate(predator);
                 }
-            }
-            for (Predator predator : predators) {
-                boidBesideWall(predator);
-                move(predator);
-                tryAccelerate(predator);
-            }
 
-            notifyObservers(new Object[]{copyBoids(), getFoods()});
-            try {
-                synchronized (this) {
-                    wait(42);
+                notifyObservers(new Object[]{copyBoids(), getFoods()});
+                try {
+                    synchronized (this) {
+                        wait(42);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -396,21 +398,12 @@ public class BoardManager extends Observable implements Runnable {
         ally.setVelocity(new double[]{newVX, newVY});
     }
 
-
-    public synchronized void addFood(double[] position) {
+    synchronized void addFood(double[] position) {
         foods.addLast(new Food(position));
     }
 
     private synchronized LinkedList<Food> getFoods() {
         return this.foods;
-    }
-
-    public LinkedList<Predator> getPredators() {
-        return predators;
-    }
-
-    public LinkedList<Ally> getAllies() {
-        return allies;
     }
 
     @Override
@@ -441,7 +434,7 @@ public class BoardManager extends Observable implements Runnable {
         return boids;
     }
 
-    public void endThreadWork() {
+    void endThreadWork() {
         canWork = false;
     }
 
