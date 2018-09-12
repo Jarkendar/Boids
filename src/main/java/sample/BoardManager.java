@@ -400,7 +400,7 @@ public class BoardManager extends Observable implements Runnable {
         foods.addLast(new Food(position));
     }
 
-    private synchronized LinkedList<Food> getFoods() {
+    private LinkedList<Food> getFoods() {
         return this.foods;
     }
 
