@@ -11,7 +11,6 @@ import static java.lang.Math.*;
 
 public class BoardManager extends Observable implements Runnable {
 
-    private static final double CHANGE_VELOCITY_BESIDE_WALL = 0.5;
     private static final double MINIMAL_DISTANCE_TO_WALL = 20;
     private static final Random RANDOM = new Random();
     private LinkedList<Observer> observers = new LinkedList<>();
@@ -29,6 +28,7 @@ public class BoardManager extends Observable implements Runnable {
     private double maxVelocity = 0;
     private double[] startVelocity = {0, 0};
     private double distanceToEat = 0;
+    private double changeVelocityBesideWall = 0.5;
 
     private double weightOfSpeed = 1.0;
     private double weightOfDistance = 1.0;
@@ -45,9 +45,9 @@ public class BoardManager extends Observable implements Runnable {
         startVelocity[0] = -maxVelocity / 2.0;
         startVelocity[1] = maxVelocity / 2.0;
         distanceToEat = minimalDistance / 4;
+        changeVelocityBesideWall = maxVelocity / 8.0;
         createPredators(predatorNumber);
         createAllies(allyNumber);
-        System.out.println(toString());
     }
 
     public BoardManager(double boardWidth, double boardHeight, int predatorNumber, int allyNumber, double neighbourhoodRadius, double viewingAngle, double minimalDistance, double maxVelocity, double weightOfSpeed, double weightOfDistance, double weightOfDisturbances, double weightOfMinimalDistance) {
@@ -64,9 +64,17 @@ public class BoardManager extends Observable implements Runnable {
         this.weightOfDisturbances = weightOfDisturbances;
         this.weightOfMinimalDistance = weightOfMinimalDistance;
         distanceToEat = minimalDistance / 4;
+        changeVelocityBesideWall = maxVelocity / 8.0;
         createPredators(predatorNumber);
         createAllies(allyNumber);
-        System.out.println(toString());
+    }
+
+    public synchronized void updatePredatorsCount(int count){
+        if (count > predators.size()){
+            createPredators(count-predators.size());
+        }else if (count < predators.size()){
+            destroyPredators(predators.size()-count);
+        }
     }
 
     private void createPredators(int count) {
@@ -75,9 +83,29 @@ public class BoardManager extends Observable implements Runnable {
         }
     }
 
+    private void destroyPredators(int count){
+        for (int i=0; i<count; ++i){
+            predators.removeFirst();
+        }
+    }
+
+    public synchronized void updateAlliesCount(int count){
+        if (count > allies.size()){
+            createAllies(count-allies.size());
+        }else if (count < allies.size()){
+            destroyAllies(allies.size()-count);
+        }
+    }
+
     private void createAllies(int count) {
         for (int i = 0; i < count; ++i) {
             allies.addLast(new Ally(randPosition(System.currentTimeMillis()), randVelocity(System.currentTimeMillis())));
+        }
+    }
+
+    private void destroyAllies(int count){
+        for (int i = 0 ; i<count; ++i){
+            allies.removeFirst();
         }
     }
 
@@ -115,44 +143,44 @@ public class BoardManager extends Observable implements Runnable {
 
     @Override
     public void run() {
-        while (canWork) {
-            for (Ally ally : allies) {
-                LinkedList<Predator> closePredators = getClosePredators(ally);
-                if (closePredators == null) {
-                    if (getFoods().isEmpty()) {
-                        LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
-                        if (!neighbourhood.isEmpty()) {
-                            firstBoidsRule(ally, neighbourhood);
-                            secondBoidsRule(ally, neighbourhood);
-                            thirdBoidsRule(ally, neighbourhood);
+        synchronized (this) {
+            while (canWork) {
+                for (Ally ally : allies) {
+                    LinkedList<Predator> closePredators = getClosePredators(ally);
+                    if (closePredators == null) {
+                        if (getFoods().isEmpty()) {
+                            LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
+                            if (!neighbourhood.isEmpty()) {
+                                firstBoidsRule(ally, neighbourhood);
+                                secondBoidsRule(ally, neighbourhood);
+                                thirdBoidsRule(ally, neighbourhood);
+                            }
+                        } else {
+                            Food nearestFood = findTheNearestFood(ally);
+                            boidsRuleAboutFood(ally, nearestFood);
                         }
                     } else {
-                        Food nearestFood = findTheNearestFood(ally);
-                        boidsRuleAboutFood(ally, nearestFood);
+                        boidsRuleAboutPredators(ally, closePredators);
                     }
-                } else {
-                    boidsRuleAboutPredators(ally, closePredators);
+                    boidBesideWall(ally);
+                    move(ally);
+                    tryAccelerate(ally);
+                    if (!getFoods().isEmpty()) {
+                        tryConsumeFood(ally);
+                    }
                 }
-                boidBesideWall(ally);
-                move(ally);
-                tryAccelerate(ally);
-                if (!getFoods().isEmpty()) {
-                    tryConsumeFood(ally);
+                for (Predator predator : predators) {
+                    boidBesideWall(predator);
+                    move(predator);
+                    tryAccelerate(predator);
                 }
-            }
-            for (Predator predator : predators) {
-                boidBesideWall(predator);
-                move(predator);
-                tryAccelerate(predator);
-            }
 
-            notifyObservers(new Object[]{copyBoids(), getFoods()});
-            try {
-                synchronized (this) {
+                notifyObservers(new Object[]{copyBoids(), getFoods()});
+                try {
                     wait(42);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -184,14 +212,14 @@ public class BoardManager extends Observable implements Runnable {
 
     private void boidBesideWall(Boid boid) {
         if (boid.getPosition()[0] < 0 + MINIMAL_DISTANCE_TO_WALL) {
-            boid.setVelocity(new double[]{boid.getVelocity()[0] + CHANGE_VELOCITY_BESIDE_WALL, boid.getVelocity()[1]});
+            boid.setVelocity(new double[]{boid.getVelocity()[0] + changeVelocityBesideWall, boid.getVelocity()[1]});
         } else if (boid.getPosition()[0] > boardWidth - MINIMAL_DISTANCE_TO_WALL) {
-            boid.setVelocity(new double[]{boid.getVelocity()[0] - CHANGE_VELOCITY_BESIDE_WALL, boid.getVelocity()[1]});
+            boid.setVelocity(new double[]{boid.getVelocity()[0] - changeVelocityBesideWall, boid.getVelocity()[1]});
         }
         if (boid.getPosition()[1] < 0 + MINIMAL_DISTANCE_TO_WALL) {
-            boid.setVelocity(new double[]{boid.getVelocity()[0], boid.getVelocity()[1] + CHANGE_VELOCITY_BESIDE_WALL});
+            boid.setVelocity(new double[]{boid.getVelocity()[0], boid.getVelocity()[1] + changeVelocityBesideWall});
         } else if (boid.getPosition()[1] > boardHeight - MINIMAL_DISTANCE_TO_WALL) {
-            boid.setVelocity(new double[]{boid.getVelocity()[0], boid.getVelocity()[1] - CHANGE_VELOCITY_BESIDE_WALL});
+            boid.setVelocity(new double[]{boid.getVelocity()[0], boid.getVelocity()[1] - changeVelocityBesideWall});
         }
     }
 
@@ -394,21 +422,12 @@ public class BoardManager extends Observable implements Runnable {
         ally.setVelocity(new double[]{newVX, newVY});
     }
 
-
-    public synchronized void addFood(double[] position) {
+    synchronized void addFood(double[] position) {
         foods.addLast(new Food(position));
     }
 
-    private synchronized LinkedList<Food> getFoods() {
+    private LinkedList<Food> getFoods() {
         return this.foods;
-    }
-
-    public LinkedList<Predator> getPredators() {
-        return predators;
-    }
-
-    public LinkedList<Ally> getAllies() {
-        return allies;
     }
 
     @Override
@@ -439,8 +458,44 @@ public class BoardManager extends Observable implements Runnable {
         return boids;
     }
 
-    public void endThreadWork() {
+    void endThreadWork() {
         canWork = false;
+    }
+
+    public synchronized void setNeighbourhoodRadius(double neighbourhoodRadius) {
+        this.neighbourhoodRadius = neighbourhoodRadius;
+    }
+
+    public synchronized void setViewingAngle(double viewingAngle) {
+        this.viewingAngle = viewingAngle;
+    }
+
+    public synchronized void setMinimalDistance(double minimalDistance) {
+        this.minimalDistance = minimalDistance;
+        distanceToEat = minimalDistance / 4;
+    }
+
+    public synchronized void setMaxVelocity(double maxVelocity) {
+        this.maxVelocity = maxVelocity;
+        startVelocity[0] = maxVelocity / 2;
+        startVelocity[1] = maxVelocity / 2;
+        changeVelocityBesideWall = maxVelocity / 8.0;
+    }
+
+    public synchronized void setWeightOfSpeed(double weightOfSpeed) {
+        this.weightOfSpeed = weightOfSpeed;
+    }
+
+    public synchronized void setWeightOfDistance(double weightOfDistance) {
+        this.weightOfDistance = weightOfDistance;
+    }
+
+    public synchronized void setWeightOfDisturbances(double weightOfDisturbances) {
+        this.weightOfDisturbances = weightOfDisturbances;
+    }
+
+    public synchronized void setWeightOfMinimalDistance(double weightOfMinimalDistance) {
+        this.weightOfMinimalDistance = weightOfMinimalDistance;
     }
 
     @Override
