@@ -37,7 +37,6 @@
                 <TextField fx:id="weightOfDisturbancesField" layoutX="994.0" layoutY="309.0" maxWidth="76.0" promptText="\%" text="10" />
                 <Label layoutX="834.0" layoutY="342.0" text="Max velocity [pix/step]" />
                 <TextField fx:id="maxVelocityField" layoutX="994.0" layoutY="337.0" maxWidth="76.0" promptText="px/step" text="8" />
-                <Button fx:id="updateButton" layoutX="834.0" layoutY="728.0" maxHeight="58.0" maxWidth="236.0" minHeight="58.0" minWidth="236.0" mnemonicParsing="false" onAction="#startSimulation" text="Update" />
             </children>
         </AnchorPane>
     </children>
