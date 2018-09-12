@@ -117,46 +117,44 @@ public class BoardManager extends Observable implements Runnable {
 
     @Override
     public void run() {
-        synchronized (this) {
-            while (canWork) {
-                for (Ally ally : allies) {
-                    LinkedList<Predator> closePredators = getClosePredators(ally);
-                    if (closePredators == null) {
-                        if (getFoods().isEmpty()) {
-                            LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
-                            if (!neighbourhood.isEmpty()) {
-                                firstBoidsRule(ally, neighbourhood);
-                                secondBoidsRule(ally, neighbourhood);
-                                thirdBoidsRule(ally, neighbourhood);
-                            }
-                        } else {
-                            Food nearestFood = findTheNearestFood(ally);
-                            boidsRuleAboutFood(ally, nearestFood);
+        while (canWork) {
+            for (Ally ally : allies) {
+                LinkedList<Predator> closePredators = getClosePredators(ally);
+                if (closePredators == null) {
+                    if (getFoods().isEmpty()) {
+                        LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
+                        if (!neighbourhood.isEmpty()) {
+                            firstBoidsRule(ally, neighbourhood);
+                            secondBoidsRule(ally, neighbourhood);
+                            thirdBoidsRule(ally, neighbourhood);
                         }
                     } else {
-                        boidsRuleAboutPredators(ally, closePredators);
+                        Food nearestFood = findTheNearestFood(ally);
+                        boidsRuleAboutFood(ally, nearestFood);
                     }
-                    boidBesideWall(ally);
-                    move(ally);
-                    tryAccelerate(ally);
-                    if (!getFoods().isEmpty()) {
-                        tryConsumeFood(ally);
-                    }
+                } else {
+                    boidsRuleAboutPredators(ally, closePredators);
                 }
-                for (Predator predator : predators) {
-                    boidBesideWall(predator);
-                    move(predator);
-                    tryAccelerate(predator);
+                boidBesideWall(ally);
+                move(ally);
+                tryAccelerate(ally);
+                if (!getFoods().isEmpty()) {
+                    tryConsumeFood(ally);
                 }
+            }
+            for (Predator predator : predators) {
+                boidBesideWall(predator);
+                move(predator);
+                tryAccelerate(predator);
+            }
 
-                notifyObservers(new Object[]{copyBoids(), getFoods()});
-                try {
-                    synchronized (this) {
-                        wait(42);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            notifyObservers(new Object[]{copyBoids(), getFoods()});
+            try {
+                synchronized (this) {
+                    wait(42);
                 }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -436,6 +434,42 @@ public class BoardManager extends Observable implements Runnable {
 
     void endThreadWork() {
         canWork = false;
+    }
+
+    public void setNeighbourhoodRadius(double neighbourhoodRadius) {
+        this.neighbourhoodRadius = neighbourhoodRadius;
+    }
+
+    public void setViewingAngle(double viewingAngle) {
+        this.viewingAngle = viewingAngle;
+    }
+
+    public void setMinimalDistance(double minimalDistance) {
+        this.minimalDistance = minimalDistance;
+        distanceToEat = minimalDistance / 4;
+    }
+
+    public void setMaxVelocity(double maxVelocity) {
+        this.maxVelocity = maxVelocity;
+        startVelocity[0] = maxVelocity / 2;
+        startVelocity[1] = maxVelocity / 2;
+        changeVelocityBesideWall = maxVelocity / 8.0;
+    }
+
+    public void setWeightOfSpeed(double weightOfSpeed) {
+        this.weightOfSpeed = weightOfSpeed;
+    }
+
+    public void setWeightOfDistance(double weightOfDistance) {
+        this.weightOfDistance = weightOfDistance;
+    }
+
+    public void setWeightOfDisturbances(double weightOfDisturbances) {
+        this.weightOfDisturbances = weightOfDisturbances;
+    }
+
+    public void setWeightOfMinimalDistance(double weightOfMinimalDistance) {
+        this.weightOfMinimalDistance = weightOfMinimalDistance;
     }
 
     @Override

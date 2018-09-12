@@ -166,6 +166,7 @@ public class Controller implements Observer {
             }
         });
         shieldOfPositions = generatePositionsOnCircle(NUMBER_OF_POINTS_ON_SHIELD, CENTER, RADIUS);
+        startSimulation(null);
     }
 
     private int[][] generatePositionsOnCircle(int points, int[] center, int radius) {//first point is on right
