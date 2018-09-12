@@ -117,44 +117,44 @@ public class BoardManager extends Observable implements Runnable {
 
     @Override
     public void run() {
-        while (canWork) {
-            for (Ally ally : allies) {
-                LinkedList<Predator> closePredators = getClosePredators(ally);
-                if (closePredators == null) {
-                    if (getFoods().isEmpty()) {
-                        LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
-                        if (!neighbourhood.isEmpty()) {
-                            firstBoidsRule(ally, neighbourhood);
-                            secondBoidsRule(ally, neighbourhood);
-                            thirdBoidsRule(ally, neighbourhood);
+        synchronized (this) {
+            while (canWork) {
+                for (Ally ally : allies) {
+                    LinkedList<Predator> closePredators = getClosePredators(ally);
+                    if (closePredators == null) {
+                        if (getFoods().isEmpty()) {
+                            LinkedList<Ally> neighbourhood = getNeighbourhoodOfBoid(ally);
+                            if (!neighbourhood.isEmpty()) {
+                                firstBoidsRule(ally, neighbourhood);
+                                secondBoidsRule(ally, neighbourhood);
+                                thirdBoidsRule(ally, neighbourhood);
+                            }
+                        } else {
+                            Food nearestFood = findTheNearestFood(ally);
+                            boidsRuleAboutFood(ally, nearestFood);
                         }
                     } else {
-                        Food nearestFood = findTheNearestFood(ally);
-                        boidsRuleAboutFood(ally, nearestFood);
+                        boidsRuleAboutPredators(ally, closePredators);
                     }
-                } else {
-                    boidsRuleAboutPredators(ally, closePredators);
+                    boidBesideWall(ally);
+                    move(ally);
+                    tryAccelerate(ally);
+                    if (!getFoods().isEmpty()) {
+                        tryConsumeFood(ally);
+                    }
                 }
-                boidBesideWall(ally);
-                move(ally);
-                tryAccelerate(ally);
-                if (!getFoods().isEmpty()) {
-                    tryConsumeFood(ally);
+                for (Predator predator : predators) {
+                    boidBesideWall(predator);
+                    move(predator);
+                    tryAccelerate(predator);
                 }
-            }
-            for (Predator predator : predators) {
-                boidBesideWall(predator);
-                move(predator);
-                tryAccelerate(predator);
-            }
 
-            notifyObservers(new Object[]{copyBoids(), getFoods()});
-            try {
-                synchronized (this) {
+                notifyObservers(new Object[]{copyBoids(), getFoods()});
+                try {
                     wait(42);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -436,40 +436,48 @@ public class BoardManager extends Observable implements Runnable {
         canWork = false;
     }
 
-    public void setNeighbourhoodRadius(double neighbourhoodRadius) {
+    public synchronized void setNeighbourhoodRadius(double neighbourhoodRadius) {
         this.neighbourhoodRadius = neighbourhoodRadius;
+        System.out.println("setNeighbourhoodRadius = "+neighbourhoodRadius);
     }
 
-    public void setViewingAngle(double viewingAngle) {
+    public synchronized void setViewingAngle(double viewingAngle) {
         this.viewingAngle = viewingAngle;
+        System.out.println("setViewingAngle = "+viewingAngle);
     }
 
-    public void setMinimalDistance(double minimalDistance) {
+    public synchronized void setMinimalDistance(double minimalDistance) {
         this.minimalDistance = minimalDistance;
         distanceToEat = minimalDistance / 4;
+        System.out.println("setMinimalDistance = "+ minimalDistance);
     }
 
-    public void setMaxVelocity(double maxVelocity) {
+    public synchronized void setMaxVelocity(double maxVelocity) {
         this.maxVelocity = maxVelocity;
         startVelocity[0] = maxVelocity / 2;
         startVelocity[1] = maxVelocity / 2;
         changeVelocityBesideWall = maxVelocity / 8.0;
+        System.out.println("setMaxVelocity = "+maxVelocity);
     }
 
-    public void setWeightOfSpeed(double weightOfSpeed) {
+    public synchronized void setWeightOfSpeed(double weightOfSpeed) {
         this.weightOfSpeed = weightOfSpeed;
+        System.out.println("setWeightOfSpeed = "+weightOfSpeed);
     }
 
-    public void setWeightOfDistance(double weightOfDistance) {
+    public synchronized void setWeightOfDistance(double weightOfDistance) {
         this.weightOfDistance = weightOfDistance;
+        System.out.println("setWeightOfDistance = "+ weightOfDistance);
     }
 
-    public void setWeightOfDisturbances(double weightOfDisturbances) {
+    public synchronized void setWeightOfDisturbances(double weightOfDisturbances) {
         this.weightOfDisturbances = weightOfDisturbances;
+        System.out.println("setWeightOfDisturbances = "+weightOfDisturbances);
     }
 
-    public void setWeightOfMinimalDistance(double weightOfMinimalDistance) {
+    public synchronized void setWeightOfMinimalDistance(double weightOfMinimalDistance) {
         this.weightOfMinimalDistance = weightOfMinimalDistance;
+        System.out.println("setWeightOfMinimalDistance = "+weightOfMinimalDistance);
     }
 
     @Override
