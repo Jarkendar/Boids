@@ -20,6 +20,8 @@ public class Controller implements Observer {
     private static final int NUMBER_OF_POINTS_ON_SHIELD = 360;
     private static final int RADIUS = 10;
     private static final int[] CENTER = {RADIUS, RADIUS};
+    private static final String GREEN_BACKGROUND = "-fx-control-inner-background: #bfff00";
+    private static final String RED_BACKGROUND = "-fx-control-inner-background: #ff0000";
     private int[][] shieldOfPositions;
 
     public Canvas canvas;
@@ -68,10 +70,16 @@ public class Controller implements Observer {
                 double maxsize = canvas.getWidth() < canvas.getHeight() ? canvas.getWidth() : canvas.getHeight();
                 if (number > 0 && number < (int) maxsize) {
                     updateButton.setDisable(!canPressUpdate());
+                    neighborhoodRadiusField.setStyle(GREEN_BACKGROUND);
+                    if (isBoardReady()){
+                        boardManager.setNeighbourhoodRadius(number);
+                    }
                 } else {
+                    neighborhoodRadiusField.setStyle(RED_BACKGROUND);
                     updateButton.setDisable(canPressUpdate());
                 }
             } else {
+                neighborhoodRadiusField.setStyle(RED_BACKGROUND);
                 updateButton.setDisable(!canPressUpdate());
             }
         });
@@ -80,10 +88,16 @@ public class Controller implements Observer {
                 int number = Integer.parseInt(newValue);
                 if (number > 0 && number < 361) {
                     updateButton.setDisable(!canPressUpdate());
+                    viewingAngleField.setStyle(GREEN_BACKGROUND);
+                    if (isBoardReady()){
+                        boardManager.setViewingAngle(number);
+                    }
                 } else {
+                    viewingAngleField.setStyle(RED_BACKGROUND);
                     updateButton.setDisable(canPressUpdate());
                 }
             } else {
+                viewingAngleField.setStyle(RED_BACKGROUND);
                 updateButton.setDisable(!canPressUpdate());
             }
         });
@@ -93,10 +107,16 @@ public class Controller implements Observer {
                 double maxsize = canvas.getWidth() < canvas.getHeight() ? canvas.getWidth() : canvas.getHeight();
                 if (number > 0 && number < (int) maxsize) {
                     updateButton.setDisable(!canPressUpdate());
+                    minimalDistanceField.setStyle(GREEN_BACKGROUND);
+                    if (isBoardReady()){
+                        boardManager.setMinimalDistance(number);
+                    }
                 } else {
+                    minimalDistanceField.setStyle(RED_BACKGROUND);
                     updateButton.setDisable(canPressUpdate());
                 }
             } else {
+                minimalDistanceField.setStyle(RED_BACKGROUND);
                 updateButton.setDisable(!canPressUpdate());
             }
         });
@@ -105,10 +125,16 @@ public class Controller implements Observer {
                 int number = Integer.parseInt(newValue);
                 if (number > 0 && number < 101) {
                     updateButton.setDisable(!canPressUpdate());
+                    weighOfSpeedField.setStyle(GREEN_BACKGROUND);
+                    if (isBoardReady()){
+                        boardManager.setWeightOfSpeed((double)number/100.0);
+                    }
                 } else {
+                    weighOfSpeedField.setStyle(RED_BACKGROUND);
                     updateButton.setDisable(canPressUpdate());
                 }
             } else {
+                weighOfSpeedField.setStyle(RED_BACKGROUND);
                 updateButton.setDisable(!canPressUpdate());
             }
         });
@@ -117,10 +143,16 @@ public class Controller implements Observer {
                 int number = Integer.parseInt(newValue);
                 if (number > 0 && number < 101) {
                     updateButton.setDisable(!canPressUpdate());
+                    weighOfDistanceField.setStyle(GREEN_BACKGROUND);
+                    if (isBoardReady()){
+                        boardManager.setWeightOfMinimalDistance((double)number/100.0);
+                    }
                 } else {
+                    weighOfDistanceField.setStyle(RED_BACKGROUND);
                     updateButton.setDisable(canPressUpdate());
                 }
             } else {
+                weighOfDistanceField.setStyle(RED_BACKGROUND);
                 updateButton.setDisable(!canPressUpdate());
             }
         });
@@ -129,10 +161,16 @@ public class Controller implements Observer {
                 int number = Integer.parseInt(newValue);
                 if (number > 0 && number < 101) {
                     updateButton.setDisable(!canPressUpdate());
+                    weightOfDisturbancesField.setStyle(GREEN_BACKGROUND);
+                    if (isBoardReady()){
+                        boardManager.setWeightOfDisturbances((double)number/100.0);
+                    }
                 } else {
+                    weightOfDisturbancesField.setStyle(RED_BACKGROUND);
                     updateButton.setDisable(canPressUpdate());
                 }
             } else {
+                weightOfDisturbancesField.setStyle(RED_BACKGROUND);
                 updateButton.setDisable(!canPressUpdate());
             }
         });
@@ -141,10 +179,16 @@ public class Controller implements Observer {
                 int number = Integer.parseInt(newValue);
                 if (number > 0 && number < 101) {
                     updateButton.setDisable(!canPressUpdate());
+                    weightOfMinDistanceField.setStyle(GREEN_BACKGROUND);
+                    if (isBoardReady()){
+                        boardManager.setWeightOfMinimalDistance((double)number/100.0);
+                    }
                 } else {
+                    weightOfMinDistanceField.setStyle(RED_BACKGROUND);
                     updateButton.setDisable(canPressUpdate());
                 }
             } else {
+                weightOfMinDistanceField.setStyle(RED_BACKGROUND);
                 updateButton.setDisable(!canPressUpdate());
             }
         });
@@ -153,10 +197,16 @@ public class Controller implements Observer {
                 int number = Integer.parseInt(newValue);
                 if (number > 0 && number < 101) {
                     updateButton.setDisable(!canPressUpdate());
+                    maxVelocityField.setStyle(GREEN_BACKGROUND);
+                    if (isBoardReady()){
+                        boardManager.setMaxVelocity(number);
+                    }
                 } else {
+                    maxVelocityField.setStyle(RED_BACKGROUND);
                     updateButton.setDisable(canPressUpdate());
                 }
             } else {
+                maxVelocityField.setStyle(RED_BACKGROUND);
                 updateButton.setDisable(!canPressUpdate());
             }
         });
@@ -165,8 +215,21 @@ public class Controller implements Observer {
                 boardManager.addFood(new double[]{event.getX(), event.getY()});
             }
         });
+        neighborhoodRadiusField.setStyle(GREEN_BACKGROUND);
+        viewingAngleField.setStyle(GREEN_BACKGROUND);
+        minimalDistanceField.setStyle(GREEN_BACKGROUND);
+        weighOfSpeedField.setStyle(GREEN_BACKGROUND);
+        weighOfDistanceField.setStyle(GREEN_BACKGROUND);
+        weightOfDisturbancesField.setStyle(GREEN_BACKGROUND);
+        weightOfMinDistanceField.setStyle(GREEN_BACKGROUND);
+        maxVelocityField.setStyle(GREEN_BACKGROUND);
+
         shieldOfPositions = generatePositionsOnCircle(NUMBER_OF_POINTS_ON_SHIELD, CENTER, RADIUS);
         startSimulation(null);
+    }
+
+    private boolean isBoardReady(){
+        return boardManager != null;
     }
 
     private int[][] generatePositionsOnCircle(int points, int[] center, int radius) {//first point is on right
