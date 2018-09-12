@@ -44,11 +44,17 @@ public class Controller implements Observer {
             if (isIntegerNumber(newValue)) {
                 int number = Integer.parseInt(newValue);
                 if (number > 0 && number < 101) {
+                    allyCountField.setStyle(GREEN_BACKGROUND);
                     updateButton.setDisable(!canPressUpdate());
+                    if (isBoardReady()){
+                        boardManager.updateAlliesCount(number);
+                    }
                 } else {
+                    allyCountField.setStyle(RED_BACKGROUND);
                     updateButton.setDisable(canPressUpdate());
                 }
             } else {
+                allyCountField.setStyle(RED_BACKGROUND);
                 updateButton.setDisable(!canPressUpdate());
             }
         });
@@ -56,11 +62,17 @@ public class Controller implements Observer {
             if (isIntegerNumber(newValue)) {
                 int number = Integer.parseInt(newValue);
                 if (number >= 0 && number < 11) {
+                    predatorCountField.setStyle(GREEN_BACKGROUND);
                     updateButton.setDisable(!canPressUpdate());
+                    if (isBoardReady()){
+                        boardManager.updatePredatorsCount(number);
+                    }
                 } else {
+                    predatorCountField.setStyle(RED_BACKGROUND);
                     updateButton.setDisable(canPressUpdate());
                 }
             } else {
+                predatorCountField.setStyle(RED_BACKGROUND);
                 updateButton.setDisable(!canPressUpdate());
             }
         });
@@ -215,6 +227,9 @@ public class Controller implements Observer {
                 boardManager.addFood(new double[]{event.getX(), event.getY()});
             }
         });
+
+        allyCountField.setStyle(GREEN_BACKGROUND);
+        predatorCountField.setStyle(GREEN_BACKGROUND);
         neighborhoodRadiusField.setStyle(GREEN_BACKGROUND);
         viewingAngleField.setStyle(GREEN_BACKGROUND);
         minimalDistanceField.setStyle(GREEN_BACKGROUND);

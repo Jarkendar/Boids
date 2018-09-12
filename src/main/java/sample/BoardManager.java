@@ -71,15 +71,43 @@ public class BoardManager extends Observable implements Runnable {
         System.out.println(toString());
     }
 
+    public synchronized void updatePredatorsCount(int count){
+        if (count > predators.size()){
+            createPredators(count-predators.size());
+        }else if (count < predators.size()){
+            destroyPredators(predators.size()-count);
+        }
+    }
+
     private void createPredators(int count) {
         for (int i = 0; i < count; ++i) {
             predators.addLast(new Predator(randPosition(System.currentTimeMillis()), randVelocity(System.currentTimeMillis())));
         }
     }
 
+    private void destroyPredators(int count){
+        for (int i=0; i<count; ++i){
+            predators.removeFirst();
+        }
+    }
+
+    public synchronized void updateAlliesCount(int count){
+        if (count > allies.size()){
+            createAllies(count-allies.size());
+        }else if (count < allies.size()){
+            destroyAllies(allies.size()-count);
+        }
+    }
+
     private void createAllies(int count) {
         for (int i = 0; i < count; ++i) {
             allies.addLast(new Ally(randPosition(System.currentTimeMillis()), randVelocity(System.currentTimeMillis())));
+        }
+    }
+
+    private void destroyAllies(int count){
+        for (int i = 0 ; i<count; ++i){
+            allies.removeFirst();
         }
     }
 
