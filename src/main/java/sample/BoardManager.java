@@ -48,7 +48,6 @@ public class BoardManager extends Observable implements Runnable {
         changeVelocityBesideWall = maxVelocity / 8.0;
         createPredators(predatorNumber);
         createAllies(allyNumber);
-        System.out.println(toString());
     }
 
     public BoardManager(double boardWidth, double boardHeight, int predatorNumber, int allyNumber, double neighbourhoodRadius, double viewingAngle, double minimalDistance, double maxVelocity, double weightOfSpeed, double weightOfDistance, double weightOfDisturbances, double weightOfMinimalDistance) {
@@ -68,7 +67,6 @@ public class BoardManager extends Observable implements Runnable {
         changeVelocityBesideWall = maxVelocity / 8.0;
         createPredators(predatorNumber);
         createAllies(allyNumber);
-        System.out.println(toString());
     }
 
     public synchronized void updatePredatorsCount(int count){
@@ -466,18 +464,15 @@ public class BoardManager extends Observable implements Runnable {
 
     public synchronized void setNeighbourhoodRadius(double neighbourhoodRadius) {
         this.neighbourhoodRadius = neighbourhoodRadius;
-        System.out.println("setNeighbourhoodRadius = "+neighbourhoodRadius);
     }
 
     public synchronized void setViewingAngle(double viewingAngle) {
         this.viewingAngle = viewingAngle;
-        System.out.println("setViewingAngle = "+viewingAngle);
     }
 
     public synchronized void setMinimalDistance(double minimalDistance) {
         this.minimalDistance = minimalDistance;
         distanceToEat = minimalDistance / 4;
-        System.out.println("setMinimalDistance = "+ minimalDistance);
     }
 
     public synchronized void setMaxVelocity(double maxVelocity) {
@@ -485,27 +480,22 @@ public class BoardManager extends Observable implements Runnable {
         startVelocity[0] = maxVelocity / 2;
         startVelocity[1] = maxVelocity / 2;
         changeVelocityBesideWall = maxVelocity / 8.0;
-        System.out.println("setMaxVelocity = "+maxVelocity);
     }
 
     public synchronized void setWeightOfSpeed(double weightOfSpeed) {
         this.weightOfSpeed = weightOfSpeed;
-        System.out.println("setWeightOfSpeed = "+weightOfSpeed);
     }
 
     public synchronized void setWeightOfDistance(double weightOfDistance) {
         this.weightOfDistance = weightOfDistance;
-        System.out.println("setWeightOfDistance = "+ weightOfDistance);
     }
 
     public synchronized void setWeightOfDisturbances(double weightOfDisturbances) {
         this.weightOfDisturbances = weightOfDisturbances;
-        System.out.println("setWeightOfDisturbances = "+weightOfDisturbances);
     }
 
     public synchronized void setWeightOfMinimalDistance(double weightOfMinimalDistance) {
         this.weightOfMinimalDistance = weightOfMinimalDistance;
-        System.out.println("setWeightOfMinimalDistance = "+weightOfMinimalDistance);
     }
 
     @Override
